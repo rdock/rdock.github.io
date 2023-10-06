@@ -1,0 +1,451 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Running docking jobs in parallel" href="running-docking-jobs-in-parallel.html" /><link rel="prev" title="Multi-step protocol for HTVS" href="multi-step-protocol-for-htvs.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>Calculating ROC curves - rDock 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle-dock.css?v=918bf6c2" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">rDock 1.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/rdocklogo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">rDock 1.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">GNU LESSER GENERAL PUBLIC LICENSE</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-counduct.html">Contributor Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-merit.html">Code of Merit</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/quick-and-dirty-installation.html">Quick and dirty installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/unpacking.html">Unpacking the distribution files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/building.html">Building</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/validation-experiments.html">Validation experiments</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/preface.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/cavity-mapping.html">Cavity mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/scoring-functions.html">Scoring functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/docking-protocol.html">Docking protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/system-definition-file.html">System definition file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/atom-typing.html">Molecular files and atom typing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/file-formats.html">File formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/programs.html">Programs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/appendix.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docking-in-3-steps.html">Docking in 3 steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docking-strategies.html">Docking strategies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-step-protocol-for-htvs.html">Multi-step protocol for HTVS</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Calculating ROC curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running-docking-jobs-in-parallel.html">Running docking jobs in parallel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pharmacophoric-restraints.html">Pharmacophoric restraints</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="calculating-roc-curves">
+<span id="id1"></span><h1>Calculating ROC curves<a class="headerlink" href="#calculating-roc-curves" title="Link to this heading">#</a></h1>
+<p>(Original entry <a class="reference external" href="http://www.ub.edu/cbdd/?q=content/how-calculate-roc-curves">published in CBDD Research Group Blog</a>.)</p>
+<p>Here you will find a a short tutorial about how to generate receiver operating
+characteristic (ROC) curves and other statistics after running rDock molecular
+docking (for other programs such as Vina or Glide, just a little modification on
+the way <code class="docutils literal notranslate"><span class="pre">dataforR_uq.txt</span></code> file is interpreted will make it work, see below).</p>
+<p>I assume all of you are familiar with what ROC curves are, what are they for and
+how they are made.</p>
+<p>Just in case, a very brief summary would be:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">ROC curves</a> are
+graphic representations of the relation existing between the sensibility and
+the specificity of a test. It is generated by plotting the fraction of true
+positives out of the total actual positives versus the fraction of false
+positives out of the total actual negatives.</p></li>
+<li><p>In our case, we will use it for checking whether a docking program is able to
+select active ligands with respect to inactive ligands (decoys) and whether it
+is able to select these active ligands in the top % of a ranked database.</p></li>
+<li><p>R Library <a class="reference external" href="https://rocr.bioinf.mpi-sb.mpg.de/">ROCR</a> is mandatory (try with
+command <code class="docutils literal notranslate"><span class="pre">install.packages(&quot;ROCR&quot;)</span></code> in R before downloading from source).</p></li>
+</ul>
+<p>The example selected for this tutorial is a system from the DUD benchmark set,
+“hivpr” or “hiv protease”.</p>
+<p>These are the files you will need (all can be downloaded in this <a class="reference external" href="https://www.dropbox.com/sh/3cz5gnr8hz79kfa/AAAX0s0dG6ioPfAvUV7AJzqza?dl=0">Dropbox shared folder</a>):</p>
+<ul class="simple">
+<li><p>List of active ligands (<code class="docutils literal notranslate"><span class="pre">ligands.txt</span></code>)</p></li>
+<li><p>List of inactive ligands (<code class="docutils literal notranslate"><span class="pre">decoys.txt</span></code>)</p></li>
+<li><p>Output file with the docked poses of each ligand with the corresponding
+docking scores (<code class="docutils literal notranslate"><span class="pre">hivpr_all_results.sd.gz</span></code>)</p></li>
+<li><p>R script with all the R commands in this tutorial (<code class="docutils literal notranslate"><span class="pre">ROC_curves.R</span></code>)</p></li>
+</ul>
+<p>Before getting into R, the resulted docked poses have to be filtered out for
+only having the best pose for each ligand (the smallest score – or highest in
+negative value). To do so run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gunzip<span class="w"> </span>hivpr_all_results.sd.gz
+sdsort<span class="w"> </span>-n<span class="w"> </span>-s<span class="w"> </span>-fSCORE<span class="w"> </span>hivpr_all_results.sd<span class="w"> </span><span class="p">|</span><span class="w"> </span>sdfilter<span class="w"> </span>-f<span class="s1">&#39;$_COUNT == 1&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>hivpr_1poseperlig.sd
+<span class="c1"># sdsort with -n and -s flags will sort internally each ligand by increasing</span>
+<span class="c1"># score and sdfilter will get only the first entry of each ligand.</span>
+
+sdreport<span class="w"> </span>-t<span class="w"> </span>hivpr_1poseperlig.sd<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2,$3,$4,$5,$6,$7}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>dataforR_uq.txt
+<span class="c1"># sdreport will print all the scores of the output in a tabular format and,</span>
+<span class="c1"># with command awk, we will format the results.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">sdsort</span></code> and <code class="docutils literal notranslate"><span class="pre">sdreport</span></code> are really useful tools for managing sd formatted
+compound collections. They are very user-friendly and free to download. They
+are provided along with rDock software in the <a class="reference internal" href="../index.html#download"><span class="std std-ref">Download</span></a>
+section of the website.</p>
+</div>
+<p>This <code class="docutils literal notranslate"><span class="pre">dataforR_uq.txt</span></code> (also in the Dropbox folder) file must contain one
+entry per ligand with the docked scores (what R will use to rank and plot the
+ROC curves).</p>
+<section id="r-commands-for-generating-roc-curves">
+<h2>R commands for generating ROC curves<a class="headerlink" href="#r-commands-for-generating-roc-curves" title="Link to this heading">#</a></h2>
+<p>Then, run the following commands in R for plotting the ROC curves:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># load ROCR</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">ROCR</span><span class="p">);</span>
+
+<span class="c1"># load ligands and decoys</span>
+<span class="n">lig</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="nf">read.table</span><span class="p">(</span><span class="s">&quot;ligands.txt&quot;</span><span class="p">)[,</span><span class="m">1</span><span class="p">]);</span>
+<span class="n">dec</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="nf">read.table</span><span class="p">(</span><span class="s">&quot;decoys.txt&quot;</span><span class="p">)[,</span><span class="m">1</span><span class="p">]);</span>
+
+<span class="c1"># load data file from docking</span>
+<span class="n">uniqRes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.table</span><span class="p">(</span><span class="s">&quot;dataforR_uq.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="bp">T</span><span class="p">);</span>
+
+<span class="c1"># change colnames</span>
+<span class="nf">colnames</span><span class="p">(</span><span class="n">uniqRes</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="o">=</span><span class="s">&quot;LigandName&quot;</span><span class="p">;</span>
+
+<span class="c1"># add column with ligand/decoy info</span>
+<span class="n">uniqRes</span><span class="o">$</span><span class="n">IsActive</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">uniqRes</span><span class="o">$</span><span class="n">LigandName</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">lig</span><span class="p">)</span>
+
+<span class="c1"># define ROC parameters</span>
+<span class="c1"># here INTER is selected to compare between ligands using SCORE.INTER</span>
+<span class="c1"># this could be changed for also running with other programs</span>
+<span class="n">predINTERuq</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">prediction</span><span class="p">(</span><span class="n">uniqRes</span><span class="o">$</span><span class="n">INTER</span><span class="o">*</span><span class="m">-1</span><span class="p">,</span><span class="w"> </span><span class="n">uniqRes</span><span class="o">$</span><span class="n">IsActive</span><span class="p">)</span>
+<span class="n">perfINTERuq</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">performance</span><span class="p">(</span><span class="n">predINTERuq</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;tpr&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;fpr&#39;</span><span class="p">)</span>
+
+<span class="c1"># plot in jpg format with a grey line with theoretical random results</span>
+<span class="nf">jpeg</span><span class="p">(</span><span class="s">&quot;hivpr_Rinter_ROC.jpg&quot;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">perfINTERuq</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="s">&quot;hivpr - ROC Curves&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&quot;blue&quot;</span><span class="p">)</span>
+<span class="nf">abline</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&quot;grey&quot;</span><span class="p">)</span>
+<span class="nf">dev.off</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Which will give us the following plot:</p>
+<img alt="../_images/hivpr_Rinter_ROC.jpg" src="../_images/hivpr_Rinter_ROC.jpg" />
+<p>Afterwards, other useful statistics such as AUC or Enrichment factors can also
+be calculated:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># AUC (area under the curve)</span>
+<span class="n">auc_rdock</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">performance</span><span class="p">(</span><span class="n">predINTERuq</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;auc&quot;</span><span class="p">)</span>
+<span class="n">auc.area_rdock</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">slot</span><span class="p">(</span><span class="n">auc_rdock</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;y.values&quot;</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">&quot;AUC: \n&quot;</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="n">auc.area_rdock</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">&quot;\n\n&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUC</span><span class="p">:</span>
+<span class="mf">0.7700965</span>
+</pre></div>
+</div>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enrichment Factors</span>
+<span class="n">EF_rdock</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">perfINTERuq</span><span class="o">@</span><span class="n">y.values</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">perfINTERuq</span><span class="o">@</span><span class="n">x.values</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span>
+<span class="n">EF_rdock_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">EF_rdock</span><span class="p">[</span><span class="nf">which</span><span class="p">(</span><span class="n">perfINTERuq</span><span class="o">@</span><span class="n">x.values</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.01</span><span class="p">)[</span><span class="m">1</span><span class="p">]]</span>
+<span class="n">EF_rdock_20</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">EF_rdock</span><span class="p">[</span><span class="nf">which</span><span class="p">(</span><span class="n">perfINTERuq</span><span class="o">@</span><span class="n">x.values</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.2</span><span class="p">)[</span><span class="m">1</span><span class="p">]]</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">&quot;Enrichment Factor top 1%:\n&quot;</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="n">EF_rdock_1</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">&quot;\n\n&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Enrichment</span> <span class="n">Factor</span> <span class="n">top</span> <span class="mi">1</span><span class="o">%</span><span class="p">:</span>
+<span class="mf">11.11817</span>
+</pre></div>
+</div>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">cat</span><span class="p">(</span><span class="s">&quot;Enrichment Factor top 20%:\n&quot;</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="n">EF_rdock_20</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">&quot;\n\n&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Enrichment</span> <span class="n">Factor</span> <span class="n">top</span> <span class="mi">20</span><span class="o">%</span><span class="p">:</span>
+<span class="mf">3.200686</span>
+</pre></div>
+</div>
+<p>Moreover, a good analysis of these curves is to re-plot them in semilogarithmic
+scale (x axis in logarithmic scale). This way, one can focus on the early
+enrichment of the database and have a more detailed view of the selected actives
+in the top % of all the ligands.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">jpeg</span><span class="p">(</span><span class="s">&quot;hivpr_semilog_ROC.jpg&quot;</span><span class="p">)</span>
+<span class="n">rdockforsemilog</span><span class="o">=</span><span class="n">perfINTERuq</span><span class="o">@</span><span class="n">x.values</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span>
+<span class="n">rdockforsemilog</span><span class="p">[</span><span class="n">rdockforsemilog</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">0.0005</span><span class="p">]</span><span class="o">=</span><span class="m">0.0005</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">rdockforsemilog</span><span class="p">,</span><span class="w"> </span><span class="n">perfINTERuq</span><span class="o">@</span><span class="n">y.values</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="n">type</span><span class="o">=</span><span class="s">&quot;l&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s">&quot;False Positive Rate&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s">&quot;True Positive Rate&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">xaxt</span><span class="o">=</span><span class="s">&quot;n&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">log</span><span class="o">=</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="s">&quot;hivpr - Semilog ROC Curves&quot;</span><span class="p">)</span>
+<span class="nf">axis</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.001</span><span class="p">,</span><span class="w"> </span><span class="m">0.01</span><span class="p">,</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span>
+<span class="n">x</span><span class="o">&lt;-</span><span class="nf">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0.001</span><span class="p">)</span>
+<span class="nf">points</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&quot;gray&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s">&quot;l&quot;</span><span class="p">)</span>
+<span class="nf">dev.off</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Obtaining the following semi-logarithmic ROC curves:</p>
+<img alt="../_images/hivpr_semilog_ROC.jpg" src="../_images/hivpr_semilog_ROC.jpg" />
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="running-docking-jobs-in-parallel.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Running docking jobs in parallel</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="multi-step-protocol-for-htvs.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Multi-step protocol for HTVS</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2012 – 2023, rDock development team;
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Calculating ROC curves</a><ul>
+<li><a class="reference internal" href="#r-commands-for-generating-roc-curves">R commands for generating ROC curves</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

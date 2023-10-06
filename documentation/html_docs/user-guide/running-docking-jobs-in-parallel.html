@@ -1,0 +1,403 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Pharmacophoric restraints" href="pharmacophoric-restraints.html" /><link rel="prev" title="Calculating ROC curves" href="calculating-roc-curves.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>Running docking jobs in parallel - rDock 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle-dock.css?v=918bf6c2" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">rDock 1.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/rdocklogo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">rDock 1.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">GNU LESSER GENERAL PUBLIC LICENSE</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-counduct.html">Contributor Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-merit.html">Code of Merit</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/quick-and-dirty-installation.html">Quick and dirty installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/unpacking.html">Unpacking the distribution files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/building.html">Building</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/validation-experiments.html">Validation experiments</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/preface.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/cavity-mapping.html">Cavity mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/scoring-functions.html">Scoring functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/docking-protocol.html">Docking protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/system-definition-file.html">System definition file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/atom-typing.html">Molecular files and atom typing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/file-formats.html">File formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/programs.html">Programs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-guide/appendix.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docking-in-3-steps.html">Docking in 3 steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docking-strategies.html">Docking strategies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-step-protocol-for-htvs.html">Multi-step protocol for HTVS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calculating-roc-curves.html">Calculating ROC curves</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Running docking jobs in parallel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pharmacophoric-restraints.html">Pharmacophoric restraints</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="running-docking-jobs-in-parallel">
+<h1>Running docking jobs in parallel<a class="headerlink" href="#running-docking-jobs-in-parallel" title="Link to this heading">#</a></h1>
+<p>In this short tutorial we will try to explain how to run rDock on a computer with multiple CPUs or a cluster with different calculation nodes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>rDock has not an MPI version to be run in parallel on a computation cluster. The approach rDock uses to parallelize the jobs is rather simple: as each molecule can be run in an independent way, the input structure file is splitted in multiple files and each of them is run independently.</p>
+</div>
+<p>For this example, we have a set of <strong>200 molecules</strong> (<code class="docutils literal notranslate"><span class="pre">input.sdf</span></code>) and we want to run it in <strong>10 CPUs</strong>.</p>
+<section id="step-1-split-molecules-input-file">
+<h2>Step 1: Split molecules input file<a class="headerlink" href="#step-1-split-molecules-input-file" title="Link to this heading">#</a></h2>
+<p>To split an SDF file (rDock needs the input in SDF format), there is a script in rDock package called <code class="docutils literal notranslate"><span class="pre">sdsplit</span></code> that does this.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sdsplit
+Splits<span class="w"> </span>SD<span class="w"> </span>records<span class="w"> </span>into<span class="w"> </span>multiple<span class="w"> </span>files<span class="w"> </span>of<span class="w"> </span>equal<span class="w"> </span>size
+
+Usage:<span class="w">  </span>sdsplit<span class="w"> </span><span class="o">[</span>-&lt;RecSize&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>-o&lt;OutputRoot&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>sdFiles<span class="o">]</span>
+
+<span class="w">        </span>-&lt;RecSize&gt;<span class="w">      </span>record<span class="w"> </span>size<span class="w"> </span>to<span class="w"> </span>split<span class="w"> </span>into<span class="w"> </span><span class="o">(</span><span class="nv">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span>records<span class="o">)</span>
+<span class="w">        </span>-o&lt;OutputRoot&gt;<span class="w">  </span>Root<span class="w"> </span>name<span class="w"> </span><span class="k">for</span><span class="w"> </span>output<span class="w"> </span>files<span class="w"> </span><span class="o">(</span><span class="nv">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tmp<span class="o">)</span>
+
+<span class="w">        </span>If<span class="w"> </span>SD<span class="w"> </span>file<span class="w"> </span>list<span class="w"> </span>not<span class="w"> </span>given,<span class="w"> </span>reads<span class="w"> </span>from<span class="w"> </span>standard<span class="w"> </span>input
+</pre></div>
+</div>
+<p>In our case, to split 200 molecules in 10 files (with 20 molecules each), we will have to run the following command that will generate 10 files called <code class="docutils literal notranslate"><span class="pre">split[1-10].sd</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sdsplit<span class="w"> </span>-20<span class="w"> </span>-osplit<span class="w"> </span>input.sdf
+</pre></div>
+</div>
+<p>Moreover, you can use the following code which allows you to specify the number of files you want instead of the number of molecules in each file (e.g., save it in a file named <code class="docutils literal notranslate"><span class="pre">splitMols.sh</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#Usage: splitMols.sh &lt;input&gt; #Nfiles &lt;outputRoot&gt;</span>
+<span class="nv">fname</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">nfiles</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">output</span><span class="o">=</span><span class="nv">$3</span>
+<span class="nv">molnum</span><span class="o">=</span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;$$$$&#39;</span><span class="w"> </span><span class="nv">$fname</span><span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$molnum</span><span class="s2"> molecules found&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Dividing &#39;</span><span class="nv">$fname</span><span class="s2">&#39; into </span><span class="nv">$nfiles</span><span class="s2"> files&quot;</span>
+<span class="nv">rawstep</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$molnum</span>/<span class="nv">$nfiles</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="w"> </span>-l<span class="sb">`</span>
+<span class="nb">let</span><span class="w"> </span><span class="nv">step</span><span class="o">=</span><span class="nv">$molnum</span>/<span class="nv">$nfiles</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$rawstep</span>%1<span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="sb">`</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">        </span><span class="nb">let</span><span class="w"> </span><span class="nv">step</span><span class="o">=</span><span class="nv">$step</span>+1<span class="p">;</span>
+<span class="k">fi</span><span class="p">;</span>
+sdsplit<span class="w"> </span>-<span class="nv">$step</span><span class="w"> </span>-o<span class="nv">$output</span><span class="w"> </span><span class="nv">$1</span>
+</pre></div>
+</div>
+<p>To get the same as in the first case, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>splitMols.sh<span class="w"> </span>input.sdf<span class="w"> </span><span class="m">10</span><span class="w"> </span>split
+</pre></div>
+</div>
+</section>
+<section id="step-2-run-docking-jobs-with-splitted-files">
+<h2>Step 2: Run docking jobs with splitted files<a class="headerlink" href="#step-2-run-docking-jobs-with-splitted-files" title="Link to this heading">#</a></h2>
+<p>We have two options:</p>
+<ul class="simple">
+<li><p>Run docking jobs locally: send it over 10 CPUs.</p></li>
+<li><p>Run docking jobs using a job scheduler.</p></li>
+</ul>
+<section id="option-1-run-docking-jobs-locally">
+<h3>Option 1: Run docking jobs locally<a class="headerlink" href="#option-1-run-docking-jobs-locally" title="Link to this heading">#</a></h3>
+<p>To run rDock (standard mode, 50 runs per ligand) in 10 CPUs, be sure that all the necessary files are located in the working directory: receptor mol2 file, prm file, cavity as file, and reference ligand for cavity definition (if used) and run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>split*sd<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>rbdock<span class="w"> </span>-i<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>-o<span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%%.*</span><span class="si">}</span>_out<span class="w"> </span>-r<span class="w"> </span>&lt;PRMFILE&gt;<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="p">&amp;;</span><span class="w"> </span><span class="k">done</span>
+</pre></div>
+</div>
+<p>This will send 10 independent docking jobs and will eventually generate 10 output files <code class="docutils literal notranslate"><span class="pre">split[1-10]_out.sd</span></code>.</p>
+<p>So that’s it, you are done!</p>
+</section>
+<section id="option-2-run-docking-jobs-with-job-scheduler">
+<h3>Option 2: Run docking jobs with job scheduler<a class="headerlink" href="#option-2-run-docking-jobs-with-job-scheduler" title="Link to this heading">#</a></h3>
+<p>Same as in Option 1, but instead of running the command above, you have to create a queueing submission file for each of the files and submit them to the queue.</p>
+<p>There are several options to use as a job scheduler. In our particular case, we use SGE and a typical submission file looks like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+<span class="c1">#$ -N rdock_job1</span>
+<span class="c1">#$ -S /bin/sh</span>
+<span class="c1">#$ -q serial</span>
+<span class="c1">#$ -o out.log</span>
+<span class="c1">#$ -e err.log</span>
+<span class="c1">#-cwd</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">RBT_ROOT</span><span class="o">=</span>/data/soft/rdock/2006.1
+<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$RBT_ROOT</span>/lib
+<span class="c1">#next is optional</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">RBT_HOME</span><span class="o">=</span>/path/to/job/files
+
+<span class="c1"># These are the comands to be executed.</span>
+<span class="nb">cd</span><span class="w"> </span>/path/to/job/files
+<span class="nv">$RBT_ROOT</span>/bin/rbdock<span class="w"> </span>-i<span class="w"> </span>&lt;INPUT&gt;.sd<span class="w"> </span>-o<span class="w"> </span>&lt;OUTPUT&gt;<span class="w"> </span>-r<span class="w"> </span>&lt;PRMFILE&gt;<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+</pre></div>
+</div>
+<p>This is highly recommended for running docking jobs of big molecule libraries.</p>
+<p>For example, to run a Virtual Screening Campaign of a million compounds, you can split the molecules in 10000 files in order to have individual files with 100 molecules each and use a job scheduler to control their execution.</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="pharmacophoric-restraints.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Pharmacophoric restraints</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="calculating-roc-curves.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Calculating ROC curves</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2012 – 2023, rDock development team;
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Running docking jobs in parallel</a><ul>
+<li><a class="reference internal" href="#step-1-split-molecules-input-file">Step 1: Split molecules input file</a></li>
+<li><a class="reference internal" href="#step-2-run-docking-jobs-with-splitted-files">Step 2: Run docking jobs with splitted files</a><ul>
+<li><a class="reference internal" href="#option-1-run-docking-jobs-locally">Option 1: Run docking jobs locally</a></li>
+<li><a class="reference internal" href="#option-2-run-docking-jobs-with-job-scheduler">Option 2: Run docking jobs with job scheduler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

@@ -1,0 +1,609 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="GNU LESSER GENERAL PUBLIC LICENSE" href="license.html" />
+
+    <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>rDock 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle-dock.css?v=918bf6c2" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="#"><div class="brand">rDock 1.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/rdocklogo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">rDock 1.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU LESSER GENERAL PUBLIC LICENSE</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="code-of-counduct.html">Contributor Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code-of-merit.html">Code of Merit</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/quick-and-dirty-installation.html">Quick and dirty installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/unpacking.html">Unpacking the distribution files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/building.html">Building</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/validation-experiments.html">Validation experiments</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/preface.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/cavity-mapping.html">Cavity mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/scoring-functions.html">Scoring functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/docking-protocol.html">Docking protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/system-definition-file.html">System definition file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/atom-typing.html">Molecular files and atom typing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/file-formats.html">File formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/programs.html">Programs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/appendix.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/docking-in-3-steps.html">Docking in 3 steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/docking-strategies.html">Docking strategies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/multi-step-protocol-for-htvs.html">Multi-step protocol for HTVS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/calculating-roc-curves.html">Calculating ROC curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/running-docking-jobs-in-parallel.html">Running docking jobs in parallel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/pharmacophoric-restraints.html">Pharmacophoric restraints</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="dock-a-fast-versatile-and-open-source-program-for-docking-ligands-to-proteins-and-nucleic-acids">
+<span id="dock-documentation"></span><h1>rDock: a fast, versatile, and open-source program for docking ligands to proteins and nucleic acids<a class="headerlink" href="#dock-a-fast-versatile-and-open-source-program-for-docking-ligands-to-proteins-and-nucleic-acids" title="Link to this heading">#</a></h1>
+<p>rDock is a fast and versatile <strong>open-source docking program</strong> that can be used
+to dock <strong>small molecules</strong> against <strong>proteins</strong> and <strong>nucleic acids</strong>. It is
+designed for high-throughput virtual screening (HTVS) campaigns and binding mode
+prediction studies.</p>
+<p>rDock is mainly written in C++ and accessory scripts and programs are written in
+C++, Perl or Python languages.</p>
+<p>The full rDock software package requires <strong>less than 50 MB</strong> of hard disk space
+and it is compilable (at this moment, <strong>only</strong>) in <strong>all Linux computers</strong>.</p>
+<p>Thanks to its design and implementation <a class="reference internal" href="#rdock2014" id="id1"><span>[rDock2014]</span></a>, it can be installed on a
+computation cluster and deployed on an <strong>unlimited number of CPUs</strong>, allowing
+HTVS campaigns to be carried out in a <strong>matter of days</strong>.</p>
+<p>Besides its main Docking program, the rDock software package also provides a set
+of tools and scripts to facilitate <strong>preparation</strong> of the input files and
+<strong>post-processing</strong> and <strong>analysis</strong> of results.</p>
+<section id="about">
+<span id="id2"></span><h2>About<a class="headerlink" href="#about" title="Link to this heading">#</a></h2>
+<section id="download">
+<span id="id3"></span><h3>Download<a class="headerlink" href="#download" title="Link to this heading">#</a></h3>
+<p>Please visit rDock GitHub page for most up to date releases.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/CBDD/rdock">Get the latest code using git</a></p></li>
+</ul>
+</section>
+<section id="features">
+<h3>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h3>
+<figure class="align-default" id="id12">
+<img alt="_images/dock1.jpg" src="_images/dock1.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">The above image illustrates the first binding mode solution for ASTEX system
+1hwi, with an RMSD of 0.88 Å.</span><a class="headerlink" href="#id12" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<dl class="simple">
+<dt>Docking preparation</dt><dd><p>Define cavities using <strong>known binders</strong> or with user-supplied <strong>3D
+coordinates</strong>. Allow -OH and -NH2 receptor side chains to rotate. Add
+explicit solvent molecules and structural waters. Supply pharmacophoric
+restraints as a bias to <strong>guide docking</strong>.</p>
+</dd>
+<dt>Pre-processing of input files</dt><dd><p>Define common ligand structure for performing <strong>tethered docking</strong> (requires
+Open Babel Python bindings). Sort, filter or split ligand files for
+facilitating <strong>parallelization</strong>. Find <strong>HTVS protocol</strong> for optimizing
+calculation time. Pre-calculate grids to decrease subsequent calculation
+times.</p>
+</dd>
+<dt>Post-processing and analysis of results</dt><dd><p>Summarize results in a tabular format. Sort, filter, merge or split results
+files. Calculate <strong>RMSD</strong> with a reference structure taking into account
+internal symmetries (requires Open Babel Python bindings).</p>
+</dd>
+<dt>Binding mode prediction</dt><dd><p>Predict how a ligand will bind to a given molecule. The ASTEX non-redundant
+test set for proteins and DOCK and rDock test sets for RNA have been used for
+validating and comparing rDock with other programs.</p>
+</dd>
+<dt>High-throughput virtual screening</dt><dd><p>Run for million of compounds in short time by exploiting the capabilities of
+computer calculation farms. Ease of <strong>parallelization</strong> in relatively
+unlimited CPUs to optimize HTVS running times. The DUD set has been used for
+validating rDock and comparing its performance to other reference docking
+programs.</p>
+</dd>
+</dl>
+<figure class="align-default" id="id13">
+<img alt="_images/dock2.jpg" src="_images/dock2.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">In red mesh, definition of the cavity obtained by execution of <code class="docutils literal notranslate"><span class="pre">rbcavity</span></code>
+program.</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="history">
+<h3>History<a class="headerlink" href="#history" title="Link to this heading">#</a></h3>
+<p>The RiboDock program was developed from 1998 to 2006 by the software team at
+RiboTargets (subsequently <a class="reference external" href="https://www.vernalis.com/">Vernalis (R&amp;D) Ltd</a>)
+<a class="reference internal" href="#ribodock2004" id="id4"><span>[RiboDock2004]</span></a>. In 2006, the software was licensed to the <a class="reference external" href="http://www.ysbl.york.ac.uk/">University of York</a> for maintenance and distribution under the
+name rDock.</p>
+<p>In 2012, Vernalis and the University of York agreed to release the program as
+open-source software <a class="reference internal" href="#rdock2014" id="id5"><span>[rDock2014]</span></a>. This version is developed with support from
+the <a class="reference external" href="http://www.ub.edu/cbdd/">University of Barcelona</a> –
+<a class="reference external" href="https://github.com/cbdd/rdock/">github.com/cbdd/rdock</a>.</p>
+</section>
+<section id="license">
+<h3>License<a class="headerlink" href="#license" title="Link to this heading">#</a></h3>
+<p>rDock is licensed under GNU LGPL version 3.0.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU LESSER GENERAL PUBLIC LICENSE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="license.html#additional-definitions">0. Additional Definitions.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#exception-to-section-3-of-the-gnu-gpl">1. Exception to Section 3 of the GNU GPL.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#conveying-modified-versions">2. Conveying Modified Versions.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#object-code-incorporating-material-from-library-header-files">3. Object Code Incorporating Material from Library Header Files.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#combined-works">4. Combined Works.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#combined-libraries">5. Combined Libraries.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#revised-versions-of-the-gnu-lesser-general-public-license">6. Revised Versions of the GNU Lesser General Public License.</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="contributor-concordat">
+<h3>Contributor concordat<a class="headerlink" href="#contributor-concordat" title="Link to this heading">#</a></h3>
+<p>rDock adheres both to No Code of Conduct and Code of Merit.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="code-of-counduct.html">Contributor Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code-of-merit.html">Code of Merit</a></li>
+</ul>
+</div>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h3>
+<p>If you are using rDock in your research, please cite <a class="reference internal" href="#rdock2014" id="id6"><span>[rDock2014]</span></a>. Former
+software reference provided for completeness is <a class="reference internal" href="#ribodock2004" id="id7"><span>[RiboDock2004]</span></a>.</p>
+<div role="list" class="citation-list">
+<div class="citation" id="rdock2014" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>rDock2014<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>,<a role="doc-backlink" href="#id6">3</a>)</span>
+<p>Ruiz-Carmona, S., Alvarez-Garcia, D., Foloppe, N.,
+Garmendia-Doval, A. B., Juhos S., et al. (2014) rDock: A Fast,
+Versatile and Open Source Program for Docking Ligands to Proteins
+and Nucleic Acids. PLoS Comput Biol 10(4): e1003571.
+<a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1003571">doi:10.1371/journal.pcbi.1003571</a></p>
+</div>
+<div class="citation" id="ribodock2004" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>RiboDock2004<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<p>Morley, S. D. and Afshar, M. (2004) Validation of an empirical
+RNA-ligand scoring function for fast flexible docking using
+RiboDock®. J Comput Aided Mol Des, 18: 189–208.
+<a class="reference external" href="https://doi.org/10.1023/B:JCAM.0000035199.48747.1e">doi:10.1023/B:JCAM.0000035199.48747.1e</a></p>
+</div>
+</div>
+</section>
+</section>
+<section id="getting-started-guide">
+<span id="id8"></span><h2>Getting started guide<a class="headerlink" href="#getting-started-guide" title="Link to this heading">#</a></h2>
+<p>In this section, you have the documentation with installation and validation
+instructions for first-time users.</p>
+<p>To continue with a short validation experiment (contained in the <a class="reference internal" href="#getting-started-guide"><span class="std std-ref">Getting
+started guide</span></a>), please visit the <a class="reference internal" href="getting-started-guide/validation-experiments.html#validation-experiments"><span class="std std-ref">Validation
+experiments section</span></a>.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/quick-and-dirty-installation.html">Quick and dirty installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/quick-and-dirty-installation.html#installation-in-3-steps">Installation in 3 steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/quick-and-dirty-installation.html#installation-tutorial">Installation tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/prerequisites.html">Prerequisites</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/prerequisites.html#compilers">Compilers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/prerequisites.html#required-packages">Required packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/unpacking.html">Unpacking the distribution files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/unpacking.html#example-unpacking-procedure">Example unpacking procedure</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/building.html">Building</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/building.html#customising-the-tmake-template-for-a-build-target">Customising the tmake template for a build target</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/building.html#build-procedure">Build procedure</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started-guide/validation-experiments.html">Validation experiments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/validation-experiments.html#binding-mode-prediction-in-proteins">Binding mode prediction in proteins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/validation-experiments.html#binding-mode-prediction-in-rna">Binding mode prediction in RNA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started-guide/validation-experiments.html#database-enrichment-actives-vs-decoys-for-htvs">Database enrichment (actives vs. decoys – for HTVS)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="reference-guide">
+<span id="id9"></span><h2>Reference guide<a class="headerlink" href="#reference-guide" title="Link to this heading">#</a></h2>
+<p>In this section you can find the documentation containing full explanation of
+all rDock software package and features.</p>
+<p>For installation details and first-users instructions, please visit
+<a class="reference internal" href="getting-started-guide/quick-and-dirty-installation.html#quick-and-dirty-installation"><span class="std std-ref">Installation</span></a> and <a class="reference internal" href="#getting-started-guide"><span class="std std-ref">Getting started</span></a> sections.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/preface.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/configuration.html#input-file-locations">Input file locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/configuration.html#launching-executables">Launching executables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/cavity-mapping.html">Cavity mapping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/cavity-mapping.html#two-sphere-method">Two sphere method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/cavity-mapping.html#reference-ligand-method">Reference ligand method</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/scoring-functions.html">Scoring functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/scoring-functions.html#component-scoring-functions">Component scoring functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/scoring-functions.html#intermolecular-scoring-functions-under-evaluation">Intermolecular scoring functions under evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/scoring-functions.html#code-implementation">Code implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/scoring-functions.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/docking-protocol.html">Docking protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/docking-protocol.html#protocol-summary">Protocol summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/docking-protocol.html#code-implementation">Code implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/docking-protocol.html#standard-dock-docking-protocol-dock-prm">Standard rDock docking protocol (<code class="docutils literal notranslate"><span class="pre">dock.prm</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/system-definition-file.html">System definition file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#receptor-definition">Receptor definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#ligand-definition">Ligand definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#solvent-definition">Solvent definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#cavity-mapping">Cavity mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#cavity-restraint">Cavity restraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#pharmacophore-restraints">Pharmacophore restraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#nmr-restraints">NMR restraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/system-definition-file.html#example-system-definition-files">Example system definition files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/atom-typing.html">Molecular files and atom typing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/atom-typing.html#atomic-properties">Atomic properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/atom-typing.html#difference-between-formal-charge-and-distributed-formal-charge">Difference between formal charge and distributed formal charge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/atom-typing.html#parsing-a-mol2-file">Parsing a MOL2 file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/atom-typing.html#parsing-an-sd-file">Parsing an SD file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/atom-typing.html#assigning-distributed-formal-charges-to-the-receptor">Assigning distributed formal charges to the receptor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/file-formats.html">File formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/file-formats.html#prm-file-format">.prm file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/file-formats.html#water-pdb-file-format">Water PDB file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/file-formats.html#pharmacophore-restraints-file-format">Pharmacophore restraints file format</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/programs.html">Programs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference-guide/programs.html#programs-reference">Programs reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-guide/appendix.html">Appendix</a></li>
+</ul>
+</div>
+</section>
+<section id="user-guide">
+<span id="id10"></span><h2>User guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/docking-in-3-steps.html">Docking in 3 steps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/docking-in-3-steps.html#step-1-system-definition">Step 1: System definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/docking-in-3-steps.html#step-2-cavity-generation">Step 2: Cavity generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/docking-in-3-steps.html#step-3-docking">Step 3: Docking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/docking-strategies.html">Docking strategies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/docking-strategies.html#standard-docking">Standard docking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/docking-strategies.html#tethered-scaffold-docking">Tethered scaffold docking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/docking-strategies.html#docking-with-pharmacophore-restraints">Docking with pharmacophore restraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/docking-strategies.html#docking-with-explicit-waters">Docking with explicit waters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/multi-step-protocol-for-htvs.html">Multi-step protocol for HTVS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/multi-step-protocol-for-htvs.html#step-1-create-the-multi-step-protocol">Step 1: Create the multi-step protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/multi-step-protocol-for-htvs.html#step-2-run-docking-with-the-multi-step-protocol">Step 2: Run docking with the multi-step protocol</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/calculating-roc-curves.html">Calculating ROC curves</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/calculating-roc-curves.html#r-commands-for-generating-roc-curves">R commands for generating ROC curves</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/running-docking-jobs-in-parallel.html">Running docking jobs in parallel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/running-docking-jobs-in-parallel.html#step-1-split-molecules-input-file">Step 1: Split molecules input file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/running-docking-jobs-in-parallel.html#step-2-run-docking-jobs-with-splitted-files">Step 2: Run docking jobs with splitted files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/pharmacophoric-restraints.html">Pharmacophoric restraints</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/pharmacophoric-restraints.html#step-1-pharmacophoric-restraints-file">Step 1: Pharmacophoric restraints file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/pharmacophoric-restraints.html#step-2-dock-system-definition-file">Step 2: rDock system definition file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide/pharmacophoric-restraints.html#step-3-optional-constraints">Step 3: Optional constraints</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="support">
+<span id="id11"></span><h2>Support<a class="headerlink" href="#support" title="Link to this heading">#</a></h2>
+<p>If you are having some trouble regarding usage, compilation, development or
+anything else, you can use different options to ask for support.</p>
+<section id="mailing-lists">
+<h3>Mailing lists<a class="headerlink" href="#mailing-lists" title="Link to this heading">#</a></h3>
+<p>If you are having any kind of trouble, you have any questions or anything related to general usage of the program please search and use our <a class="reference external" href="http://sourceforge.net/p/rdock/mailman">mailing lists</a>.</p>
+</section>
+<section id="issue-tracker">
+<h3>Issue tracker<a class="headerlink" href="#issue-tracker" title="Link to this heading">#</a></h3>
+<p>Please use <a class="reference external" href="https://github.com/CBDD/rDock/issues">GitHub Issues</a> for any comments or assistance needed.</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="license.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">GNU LESSER GENERAL PUBLIC LICENSE</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2012 – 2023, rDock development team;
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">rDock: a fast, versatile, and open-source program for docking ligands to proteins and nucleic acids</a><ul>
+<li><a class="reference internal" href="#about">About</a><ul>
+<li><a class="reference internal" href="#download">Download</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#history">History</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#contributor-concordat">Contributor concordat</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-started-guide">Getting started guide</a></li>
+<li><a class="reference internal" href="#reference-guide">Reference guide</a></li>
+<li><a class="reference internal" href="#user-guide">User guide</a></li>
+<li><a class="reference internal" href="#support">Support</a><ul>
+<li><a class="reference internal" href="#mailing-lists">Mailing lists</a></li>
+<li><a class="reference internal" href="#issue-tracker">Issue tracker</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=fc837d61"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>

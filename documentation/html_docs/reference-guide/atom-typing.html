@@ -1,0 +1,417 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="File formats" href="file-formats.html" /><link rel="prev" title="System definition file" href="system-definition-file.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+        <title>Molecular files and atom typing - rDock 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/bizstyle-dock.css?v=918bf6c2" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">rDock 1.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/rdocklogo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">rDock 1.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">GNU LESSER GENERAL PUBLIC LICENSE</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-counduct.html">Contributor Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-merit.html">Code of Merit</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/quick-and-dirty-installation.html">Quick and dirty installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/unpacking.html">Unpacking the distribution files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/building.html">Building</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started-guide/validation-experiments.html">Validation experiments</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="preface.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cavity-mapping.html">Cavity mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scoring-functions.html">Scoring functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docking-protocol.html">Docking protocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-definition-file.html">System definition file</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Molecular files and atom typing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file-formats.html">File formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="programs.html">Programs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/docking-in-3-steps.html">Docking in 3 steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/docking-strategies.html">Docking strategies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/multi-step-protocol-for-htvs.html">Multi-step protocol for HTVS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/calculating-roc-curves.html">Calculating ROC curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/running-docking-jobs-in-parallel.html">Running docking jobs in parallel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/pharmacophoric-restraints.html">Pharmacophoric restraints</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="molecular-files-and-atom-typing">
+<h1>Molecular files and atom typing<a class="headerlink" href="#molecular-files-and-atom-typing" title="Link to this heading">#</a></h1>
+<p>Macromolecular targets (protein or RNA) are input from Tripos MOL2 files
+(<code class="docutils literal notranslate"><span class="pre">RbtMOL2FileSource</span></code> class) or from pairs of Charmm PSF (<code class="docutils literal notranslate"><span class="pre">RbtPsfFileSource</span></code>
+class) and CRD (<code class="docutils literal notranslate"><span class="pre">RbtCrdFileSource</span></code> class) files. Ligands are input from MDL
+Information Systems (MDL) structure data (SD) files (<code class="docutils literal notranslate"><span class="pre">RbtMdlFileSource</span></code>
+class). Explicit structural waters are input optionally from PDB files
+(<code class="docutils literal notranslate"><span class="pre">RbtPdbFileSource</span></code> class). Ligand docking poses are output to MDL SD files.</p>
+<p>The rDock scoring functions have been defined and validated for implicit
+non-polar hydrogen (extended carbon) models only. If you provide all-atom
+models, be aware that the non-polar hydrogens will be removed automatically.
+Polar hydrogens must be defined explicitly in the molecular files, and are not
+added by rDock. Positive ionisable and negative ionisable groups can be
+automatically protonated and deprotonated respectively to create common charged
+groups such as guanidinium and carboxylic acid groups.</p>
+<p>MOL2 is now the preferred file format for rDock as it eliminates many of the
+atom typing issues inherent in preparing and loading PSF files. The use of
+PSF/CRD files is strongly discouraged. The recommendation is to prepare an
+all-atom MOL2 file with correct Tripos atom types assigned, and allow rDock to
+remove non-polar hydrogens on-the-fly.</p>
+<section id="atomic-properties">
+<h2>Atomic properties<a class="headerlink" href="#atomic-properties" title="Link to this heading">#</a></h2>
+<p>rDock requires the following properties to be defined per atom. Depending on the
+file format, these properties may be loaded directly from the molecular input
+file, or derived internally once the model is loaded:</p>
+<ul class="simple">
+<li><p>Cartesian (x,y,z) coordinates</p></li>
+<li><p>Element (atomic number)</p></li>
+<li><p>Formal hybridisation state (sp, sp2, sp3, aromatic, trigonal planar)</p></li>
+<li><p>Formal charge</p></li>
+<li><p>Distributed formal charge (known informally as group charge)</p></li>
+<li><p>Tripos force field type (rDock uses a modified version of the Sybyl 5.2 types,
+extended to include carbon types with implicit non-polar hydrogens)</p></li>
+<li><p>Atom name</p></li>
+<li><p>Substructure (residue) name</p></li>
+<li><p>Atomic radius (assigned per element from <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/RbtElements.dat</span></code>)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The rDock scoring functions do not use partial charges and therefore partial
+charges do not have to be defined. The atomic radii are simplified radii
+defined per element, and are used for cavity mapping and in the polar scoring
+function term, but are not used in the vdW scoring function term. The latter
+has its own indepedent parameterisation based on the Tripos force field
+types.</p>
+</div>
+</section>
+<section id="difference-between-formal-charge-and-distributed-formal-charge">
+<h2>Difference between formal charge and distributed formal charge<a class="headerlink" href="#difference-between-formal-charge-and-distributed-formal-charge" title="Link to this heading">#</a></h2>
+<p>The formal charge on an atom is always an integer. For example, a charged
+carboxylic acid group (COO-) can be defined formally as a formal double bond to
+a neutral oxygen sp2, and a formal single bond to a formally charged oxygen sp3.
+In reality of course, both oxygens are equivalent. rDock distributes the integer
+formal charge across all equivalent atoms in the charged group that are
+topologically equivalent. In negatively charged acid groups, the formal charge
+is distributed equally between the acid oxygens. In positively charged amines,
+the formal charge is distributed equally between the hydrogens. In charged
+guanidinium, amidinium, and imidazole groups, the central carbon also receives
+an equal portion of the formal charge (in addition to the hydrogens). The
+distributed formal charge is also known as the group charge. The polar scoring
+functions in rDock use the distributed formal charge to scale the polar
+interaction strength of the polar interactions.</p>
+</section>
+<section id="parsing-a-mol2-file">
+<h2>Parsing a MOL2 file<a class="headerlink" href="#parsing-a-mol2-file" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MOLECULE</span></code>, <code class="docutils literal notranslate"><span class="pre">ATOM</span></code>, <code class="docutils literal notranslate"><span class="pre">BOND</span></code>, and <code class="docutils literal notranslate"><span class="pre">SUBSTRUCTURE</span></code> records are parsed. The
+atom name, substructure name, Cartesian coordinates and Tripos atom type are
+read directly for each atom. The element type (atomic number) and formal
+hybridisation state are derived from the Tripos type using an internal lookup
+table. Formal charges are not read from the MOL2 file and do not have to be
+assigned correctly in the file. Distributed formal charges are assigned directly
+by rDock based on standard substructure and atom names as described below.</p>
+</section>
+<section id="parsing-an-sd-file">
+<h2>Parsing an SD file<a class="headerlink" href="#parsing-an-sd-file" title="Link to this heading">#</a></h2>
+<p>Cartesian coordinates, element and formal charge are read directly for each
+atom. Formal bond orders are read for each bond. Atom names are derived from
+element name and atom ID (e.g. C1, N2, C3). The substructure name is <code class="docutils literal notranslate"><span class="pre">MOL</span></code>.
+Formal hybridisation states are derived internally for each atom based on
+connectivity patterns and formal bond orders. The Tripos types are asssigned
+using internal rules based on atomic number, formal hybridisation state and
+formal charges. The integer formal charges are distributed automatically
+across all topologically equivalent atoms in the charged group.</p>
+</section>
+<section id="assigning-distributed-formal-charges-to-the-receptor">
+<h2>Assigning distributed formal charges to the receptor<a class="headerlink" href="#assigning-distributed-formal-charges-to-the-receptor" title="Link to this heading">#</a></h2>
+<p>rDock provides a file format independent method for assigning distributed formal
+charges directly to the receptor atoms, which is used by the MOL2 and PSF/CRD
+file readers. The method uses a lookup table based on standard substructure and
+atom names, and does not require the integer formal charges to be assigned to
+operate correctly.</p>
+<p>The lookup table file is <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/sf/RbtIonicAtoms.prm</span></code>. Each section
+name represents a substructure name that contains formally charged atoms. The
+entries within the section represent the atom names and distributed formal
+charges for that substructure name. The file provided with rDock contains
+entries for all standard amino acids and nucleic acids, common metals, and
+specific entries required for processing the GOLD CCDC/Astex validation sets.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>You may have to extend <code class="docutils literal notranslate"><span class="pre">RbtIonicAtoms.prm</span></code> if you are working with
+non-standard receptor substructure names and/or atom names, in order for the
+distributed formal charges to be assigned correctly.</p>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="file-formats.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">File formats</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="system-definition-file.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">System definition file</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2012 – 2023, rDock development team;
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Molecular files and atom typing</a><ul>
+<li><a class="reference internal" href="#atomic-properties">Atomic properties</a></li>
+<li><a class="reference internal" href="#difference-between-formal-charge-and-distributed-formal-charge">Difference between formal charge and distributed formal charge</a></li>
+<li><a class="reference internal" href="#parsing-a-mol2-file">Parsing a MOL2 file</a></li>
+<li><a class="reference internal" href="#parsing-an-sd-file">Parsing an SD file</a></li>
+<li><a class="reference internal" href="#assigning-distributed-formal-charges-to-the-receptor">Assigning distributed formal charges to the receptor</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>
