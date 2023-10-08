@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Validation experiments &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Preface" href="../reference-guide/preface.html" />
+    <link rel="prev" title="Building" href="building.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../reference-guide/preface.html" title="Preface"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="building.html" title="Building"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Validation experiments</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="validation-experiments">
+<span id="id1"></span><h1>Validation experiments<a class="headerlink" href="#validation-experiments" title="Link to this heading">¶</a></h1>
+<p>In this section you will find the instructions about how to reproduce our
+validation experiments using different test sets. Three different sets were
+analyzed for three different purposes:</p>
+<ul class="simple">
+<li><p>ASTEX set for binding mode prediction in proteins.</p></li>
+<li><p>RNA set for assess RNA-ligand docking.</p></li>
+<li><p>DUD set for database enrichment.</p></li>
+</ul>
+<section id="binding-mode-prediction-in-proteins">
+<h2>Binding mode prediction in proteins<a class="headerlink" href="#binding-mode-prediction-in-proteins" title="Link to this heading">¶</a></h2>
+<p>First of all, please go to <a class="reference external" href="https://sourceforge.net/projects/rdock/files/Validation_Sets/ASTEX_rDock_TestSet.tar.gz/download">ASTEX set SourceForge download page</a>
+to download a compressed file with the necessary data.</p>
+<p>After downloading the file <code class="docutils literal notranslate"><span class="pre">ASTEX_rDock_TestSet.tar.gz</span></code>, uncompress the file
+with the following command, which will create a folder called
+<code class="docutils literal notranslate"><span class="pre">ASTEX_rDock_TestSet</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>ASTEX_rDock_TestSet.tar.gz
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>ASTEX_rDock_TestSet/
+</pre></div>
+</div>
+<p>Here you will have the instructions for one of the systems (<code class="docutils literal notranslate"><span class="pre">1sj0</span></code>), to run
+with the rest of the systems, just change the pdb code with the one desired.
+Then, make sure that the necessary environmental variables for running rDock are
+well defined and run the following commands for entering to the folder and
+running rDock with the same settings that we have used:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>1sj0/
+
+<span class="c1">#first create the cavity using rbcavity</span>
+$<span class="w"> </span>rbcavity<span class="w"> </span>-r<span class="w"> </span>1sj0_rdock.prm<span class="w"> </span>-was<span class="w"> </span>&gt;<span class="w"> </span>1sj0_cavity.log
+
+<span class="c1">#then use rbdock to run docking</span>
+$<span class="w"> </span>rbdock<span class="w"> </span>-r<span class="w"> </span>1sj0_rdock.prm<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w"> </span>-i<span class="w"> </span>1sj0_ligand.sd<span class="w"> </span><span class="se">\</span>
+-o<span class="w"> </span>1sj0_docking_out<span class="w"> </span>&gt;<span class="w"> </span>1sj0_docking_out.log
+
+<span class="c1">#sdsort for sorting the results according to their score</span>
+$<span class="w"> </span>sdsort<span class="w"> </span>-n<span class="w"> </span>-f<span class="s1">&#39;SCORE&#39;</span><span class="w"> </span>1sj0_docking_out.sd<span class="w"> </span>&gt;<span class="w"> </span>1sj0_docking_out_sorted.sd
+
+<span class="c1">#calculate rmsd from the output comparing with the crystal structure of the ligand</span>
+$<span class="w"> </span>sdrmsd<span class="w"> </span>1sj0_ligand.sd<span class="w"> </span>1sj0_docking_out_sorted.sd
+</pre></div>
+</div>
+</section>
+<section id="binding-mode-prediction-in-rna">
+<h2>Binding mode prediction in RNA<a class="headerlink" href="#binding-mode-prediction-in-rna" title="Link to this heading">¶</a></h2>
+<p>In a similar way of the section above, here you will find a brief tutorial on
+how to run rDock with the RNA TestSet used in the validation. As in the first
+section, please go to <a class="reference external" href="https://sourceforge.net/projects/rdock/files/Validation_Sets/RNA_rDock_TestSet.tar.gz/download">RNA set SourceForge download page</a>
+to download a compressed file with the necessary data.</p>
+<p>After downloading the file <code class="docutils literal notranslate"><span class="pre">RNA_rDock_TestSet.tar.gz</span></code>, uncompress the file
+with the following command, which will create a folder called
+<code class="docutils literal notranslate"><span class="pre">RNA_rDock_TestSet</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>RNA_rDock_TestSet.tar.gz
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>RNA_rDock_TestSet/
+</pre></div>
+</div>
+<p>Here you will have the instructions for one of the systems (<code class="docutils literal notranslate"><span class="pre">1nem</span></code>), to run
+with the rest of the systems, just change the pdb code with the one desired.
+Then, make sure that the necessary environmental variables for running rDock are
+well defined and run the following commands for entering to the folder and
+running rDock with the same settings that we have used (if you have run the
+previous set, the variables should already be correctly defined):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>1nem/
+
+<span class="c1">#first create the cavity using rbcavity</span>
+$<span class="w"> </span>rbcavity<span class="w"> </span>-r<span class="w"> </span>1nem_rdock.prm<span class="w"> </span>-was<span class="w"> </span>&gt;<span class="w"> </span>1nem_cavity.log
+
+<span class="c1">#then use rbdock to run docking</span>
+$<span class="w"> </span>rbdock<span class="w"> </span>-r<span class="w"> </span>1nem_rdock.prm<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w"> </span>-i<span class="w"> </span>1nem_lig.sd<span class="w"> </span><span class="se">\</span>
+-o<span class="w"> </span>1nem_docking_out<span class="w"> </span>&gt;<span class="w"> </span>1nem_docking_out.log
+
+<span class="c1">#sdsort for sorting the results according to their score</span>
+$<span class="w"> </span>sdsort<span class="w"> </span>-n<span class="w"> </span>-f<span class="s1">&#39;SCORE&#39;</span><span class="w"> </span>1nem_docking_out.sd<span class="w"> </span>&gt;<span class="w"> </span>1nem_docking_out_sorted.sd
+
+<span class="c1">#calculate rmsd from the output comparing with the crystal structure of the ligand</span>
+$<span class="w"> </span>sdrmsd<span class="w"> </span>1nem_lig.sd<span class="w"> </span>1nem_docking_out_sorted.sd
+</pre></div>
+</div>
+</section>
+<section id="database-enrichment-actives-vs-decoys-for-htvs">
+<h2>Database enrichment (actives vs. decoys – for HTVS)<a class="headerlink" href="#database-enrichment-actives-vs-decoys-for-htvs" title="Link to this heading">¶</a></h2>
+<p>In this section you will find a brief tutorial on how to run rDock with the DUD
+test set used in the validation and how to perform different analysis of the
+results. As in the sections above, please go to <a class="reference external" href="https://sourceforge.net/projects/rdock/files/Validation_Sets/DUD_rDock_TestSet.tar.gz/download">DUD set SourceForge download
+page</a>
+to download a compressed file with the necessary data.</p>
+<p>After downloading the file <code class="docutils literal notranslate"><span class="pre">DUD_rDock_TestSet.tar.gz</span></code>, uncompress the file
+with the following command, which will create a folder called
+<code class="docutils literal notranslate"><span class="pre">DUD_rDock_TestSet</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>DUD_rDock_TestSet.tar.gz
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>DUD_rDock_TestSet/
+</pre></div>
+</div>
+<p>Here you will have the instructions for one of the systems (<code class="docutils literal notranslate"><span class="pre">hivpr</span></code>), to run
+with the rest of the systems, just change the DUD system code with the one
+desired. Then, make sure that the necessary environmental variables for running
+rDock are well defined and run the following commands for entering to the folder
+and running rDock with the same settings that we have used (if you have run the
+previous sets, the variables should already be correctly defined):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>hivpr/
+
+<span class="c1">#first create the cavity using rbcavity</span>
+$<span class="w"> </span>rbcavity<span class="w"> </span>-r<span class="w"> </span>hivpr_rdock.prm<span class="w"> </span>-was<span class="w"> </span>&gt;<span class="w"> </span>hivpr_cavity.log
+</pre></div>
+</div>
+<p>As the number of ligands to dock is very high, we suggest you to use any
+distributed computing environments, such as SGE or Condor, and configure rDock
+to run in multiple CPUs. Namely, split the input ligands file in as many parts
+as desired (very easy using <code class="docutils literal notranslate"><span class="pre">sdsplit</span></code> tool) and run independent rDock docking
+jobs for each “splitted” input file. However, for this example purpose, you will
+have the instructions for running all set of actives and decoys in one docking
+job:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#uncompress ligand file</span>
+$<span class="w"> </span>gunzip<span class="w"> </span>hivpr_ligprep.sdf.gz
+
+<span class="c1">#use rbdock to run docking</span>
+$<span class="w"> </span>rbdock<span class="w"> </span>-r<span class="w"> </span>hivpr_rdock.prm<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w"> </span>-i<span class="w"> </span>hivpr_ligprep.sdf<span class="w"> </span><span class="se">\</span>
+-o<span class="w"> </span>hivpr_docking_out<span class="w"> </span>&gt;<span class="w"> </span>hivpr_docking_out.log
+
+<span class="c1">#sdsort with -n and -s flags will sort internally each ligand by increasing</span>
+<span class="c1">#score and sdfilter will get only the first entry of each ligand</span>
+$<span class="w"> </span>sdsort<span class="w"> </span>-n<span class="w"> </span>-s<span class="w"> </span>-fSCORE<span class="w"> </span>hivpr_docking_out.sd<span class="w"> </span><span class="p">|</span><span class="w"> </span>sdfilter<span class="w"> </span><span class="se">\</span>
+-f<span class="s1">&#39;$_COUNT == 1&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>hivpr_1poseperlig.sd
+
+<span class="c1">#sdreport will print all the scores of the output in a tabular format and,</span>
+<span class="c1">#with command awk, we will format the results</span>
+$<span class="w"> </span>sdreport<span class="w"> </span>-t<span class="w"> </span>hivpr_1poseperlig.sd<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2,$3,$4,$5,$6,$7}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>dataforR_uq.txt
+</pre></div>
+</div>
+<p>At this point, you should have a file called <code class="docutils literal notranslate"><span class="pre">hivpr_docking_out.sd</span></code> with all
+docking poses written by rDock (100 * number of input ligands), a file called
+<code class="docutils literal notranslate"><span class="pre">hivpr_1poseperlig.sd</span></code> with the best scored docking pose for each ligand and a
+file called <code class="docutils literal notranslate"><span class="pre">dataforR_uq.txt</span></code> that will be used for calculating ROC curves
+using R. The next step is to calculate ROC curves and other statistics. To do
+so, please visit section <a class="reference internal" href="../user-guide/calculating-roc-curves.html#calculating-roc-curves"><span class="std std-ref">Calculating ROC curves</span></a>
+and jump to the subsection “R commands for generating ROC curves”.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Validation experiments</a><ul>
+<li><a class="reference internal" href="#binding-mode-prediction-in-proteins">Binding mode prediction in proteins</a></li>
+<li><a class="reference internal" href="#binding-mode-prediction-in-rna">Binding mode prediction in RNA</a></li>
+<li><a class="reference internal" href="#database-enrichment-actives-vs-decoys-for-htvs">Database enrichment (actives vs. decoys – for HTVS)</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Running docking jobs in parallel &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pharmacophoric restraints" href="pharmacophoric-restraints.html" />
+    <link rel="prev" title="Calculating ROC curves" href="calculating-roc-curves.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="pharmacophoric-restraints.html" title="Pharmacophoric restraints"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="calculating-roc-curves.html" title="Calculating ROC curves"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Running docking jobs in parallel</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="running-docking-jobs-in-parallel">
+<h1>Running docking jobs in parallel<a class="headerlink" href="#running-docking-jobs-in-parallel" title="Link to this heading">¶</a></h1>
+<p>In this short tutorial we will try to explain how to run rDock on a computer with multiple CPUs or a cluster with different calculation nodes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>rDock has not an MPI version to be run in parallel on a computation cluster. The approach rDock uses to parallelize the jobs is rather simple: as each molecule can be run in an independent way, the input structure file is splitted in multiple files and each of them is run independently.</p>
+</div>
+<p>For this example, we have a set of <strong>200 molecules</strong> (<code class="docutils literal notranslate"><span class="pre">input.sdf</span></code>) and we want to run it in <strong>10 CPUs</strong>.</p>
+<section id="step-1-split-molecules-input-file">
+<h2>Step 1: Split molecules input file<a class="headerlink" href="#step-1-split-molecules-input-file" title="Link to this heading">¶</a></h2>
+<p>To split an SDF file (rDock needs the input in SDF format), there is a script in rDock package called <code class="docutils literal notranslate"><span class="pre">sdsplit</span></code> that does this.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sdsplit
+Splits<span class="w"> </span>SD<span class="w"> </span>records<span class="w"> </span>into<span class="w"> </span>multiple<span class="w"> </span>files<span class="w"> </span>of<span class="w"> </span>equal<span class="w"> </span>size
+
+Usage:<span class="w">  </span>sdsplit<span class="w"> </span><span class="o">[</span>-&lt;RecSize&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>-o&lt;OutputRoot&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>sdFiles<span class="o">]</span>
+
+<span class="w">        </span>-&lt;RecSize&gt;<span class="w">      </span>record<span class="w"> </span>size<span class="w"> </span>to<span class="w"> </span>split<span class="w"> </span>into<span class="w"> </span><span class="o">(</span><span class="nv">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span>records<span class="o">)</span>
+<span class="w">        </span>-o&lt;OutputRoot&gt;<span class="w">  </span>Root<span class="w"> </span>name<span class="w"> </span><span class="k">for</span><span class="w"> </span>output<span class="w"> </span>files<span class="w"> </span><span class="o">(</span><span class="nv">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tmp<span class="o">)</span>
+
+<span class="w">        </span>If<span class="w"> </span>SD<span class="w"> </span>file<span class="w"> </span>list<span class="w"> </span>not<span class="w"> </span>given,<span class="w"> </span>reads<span class="w"> </span>from<span class="w"> </span>standard<span class="w"> </span>input
+</pre></div>
+</div>
+<p>In our case, to split 200 molecules in 10 files (with 20 molecules each), we will have to run the following command that will generate 10 files called <code class="docutils literal notranslate"><span class="pre">split[1-10].sd</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sdsplit<span class="w"> </span>-20<span class="w"> </span>-osplit<span class="w"> </span>input.sdf
+</pre></div>
+</div>
+<p>Moreover, you can use the following code which allows you to specify the number of files you want instead of the number of molecules in each file (e.g., save it in a file named <code class="docutils literal notranslate"><span class="pre">splitMols.sh</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#Usage: splitMols.sh &lt;input&gt; #Nfiles &lt;outputRoot&gt;</span>
+<span class="nv">fname</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">nfiles</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">output</span><span class="o">=</span><span class="nv">$3</span>
+<span class="nv">molnum</span><span class="o">=</span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;$$$$&#39;</span><span class="w"> </span><span class="nv">$fname</span><span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$molnum</span><span class="s2"> molecules found&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Dividing &#39;</span><span class="nv">$fname</span><span class="s2">&#39; into </span><span class="nv">$nfiles</span><span class="s2"> files&quot;</span>
+<span class="nv">rawstep</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$molnum</span>/<span class="nv">$nfiles</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="w"> </span>-l<span class="sb">`</span>
+<span class="nb">let</span><span class="w"> </span><span class="nv">step</span><span class="o">=</span><span class="nv">$molnum</span>/<span class="nv">$nfiles</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$rawstep</span>%1<span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="sb">`</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">        </span><span class="nb">let</span><span class="w"> </span><span class="nv">step</span><span class="o">=</span><span class="nv">$step</span>+1<span class="p">;</span>
+<span class="k">fi</span><span class="p">;</span>
+sdsplit<span class="w"> </span>-<span class="nv">$step</span><span class="w"> </span>-o<span class="nv">$output</span><span class="w"> </span><span class="nv">$1</span>
+</pre></div>
+</div>
+<p>To get the same as in the first case, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>splitMols.sh<span class="w"> </span>input.sdf<span class="w"> </span><span class="m">10</span><span class="w"> </span>split
+</pre></div>
+</div>
+</section>
+<section id="step-2-run-docking-jobs-with-splitted-files">
+<h2>Step 2: Run docking jobs with splitted files<a class="headerlink" href="#step-2-run-docking-jobs-with-splitted-files" title="Link to this heading">¶</a></h2>
+<p>We have two options:</p>
+<ul class="simple">
+<li><p>Run docking jobs locally: send it over 10 CPUs.</p></li>
+<li><p>Run docking jobs using a job scheduler.</p></li>
+</ul>
+<section id="option-1-run-docking-jobs-locally">
+<h3>Option 1: Run docking jobs locally<a class="headerlink" href="#option-1-run-docking-jobs-locally" title="Link to this heading">¶</a></h3>
+<p>To run rDock (standard mode, 50 runs per ligand) in 10 CPUs, be sure that all the necessary files are located in the working directory: receptor mol2 file, prm file, cavity as file, and reference ligand for cavity definition (if used) and run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>split*sd<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>rbdock<span class="w"> </span>-i<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>-o<span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%%.*</span><span class="si">}</span>_out<span class="w"> </span>-r<span class="w"> </span>&lt;PRMFILE&gt;<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="p">&amp;;</span><span class="w"> </span><span class="k">done</span>
+</pre></div>
+</div>
+<p>This will send 10 independent docking jobs and will eventually generate 10 output files <code class="docutils literal notranslate"><span class="pre">split[1-10]_out.sd</span></code>.</p>
+<p>So that’s it, you are done!</p>
+</section>
+<section id="option-2-run-docking-jobs-with-job-scheduler">
+<h3>Option 2: Run docking jobs with job scheduler<a class="headerlink" href="#option-2-run-docking-jobs-with-job-scheduler" title="Link to this heading">¶</a></h3>
+<p>Same as in Option 1, but instead of running the command above, you have to create a queueing submission file for each of the files and submit them to the queue.</p>
+<p>There are several options to use as a job scheduler. In our particular case, we use SGE and a typical submission file looks like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+<span class="c1">#$ -N rdock_job1</span>
+<span class="c1">#$ -S /bin/sh</span>
+<span class="c1">#$ -q serial</span>
+<span class="c1">#$ -o out.log</span>
+<span class="c1">#$ -e err.log</span>
+<span class="c1">#-cwd</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">RBT_ROOT</span><span class="o">=</span>/data/soft/rdock/2006.1
+<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$RBT_ROOT</span>/lib
+<span class="c1">#next is optional</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">RBT_HOME</span><span class="o">=</span>/path/to/job/files
+
+<span class="c1"># These are the comands to be executed.</span>
+<span class="nb">cd</span><span class="w"> </span>/path/to/job/files
+<span class="nv">$RBT_ROOT</span>/bin/rbdock<span class="w"> </span>-i<span class="w"> </span>&lt;INPUT&gt;.sd<span class="w"> </span>-o<span class="w"> </span>&lt;OUTPUT&gt;<span class="w"> </span>-r<span class="w"> </span>&lt;PRMFILE&gt;<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+</pre></div>
+</div>
+<p>This is highly recommended for running docking jobs of big molecule libraries.</p>
+<p>For example, to run a Virtual Screening Campaign of a million compounds, you can split the molecules in 10000 files in order to have individual files with 100 molecules each and use a job scheduler to control their execution.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Running docking jobs in parallel</a><ul>
+<li><a class="reference internal" href="#step-1-split-molecules-input-file">Step 1: Split molecules input file</a></li>
+<li><a class="reference internal" href="#step-2-run-docking-jobs-with-splitted-files">Step 2: Run docking jobs with splitted files</a><ul>
+<li><a class="reference internal" href="#option-1-run-docking-jobs-locally">Option 1: Run docking jobs locally</a></li>
+<li><a class="reference internal" href="#option-2-run-docking-jobs-with-job-scheduler">Option 2: Run docking jobs with job scheduler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

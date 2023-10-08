@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Docking in 3 steps &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Docking strategies" href="docking-strategies.html" />
+    <link rel="prev" title="Appendix" href="../reference-guide/appendix.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="docking-strategies.html" title="Docking strategies"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../reference-guide/appendix.html" title="Appendix"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Docking in 3 steps</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="docking-in-3-steps">
+<span id="id1"></span><h1>Docking in 3 steps<a class="headerlink" href="#docking-in-3-steps" title="Link to this heading">¶</a></h1>
+<p>You will find in this page a short tutorial for running rDock.</p>
+<p>It has been divided in 3 steps:</p>
+<ol class="arabic simple">
+<li><p>System definition</p></li>
+<li><p>Cavity generation</p></li>
+<li><p>Docking</p></li>
+</ol>
+<section id="step-1-system-definition">
+<h2>Step 1: System definition<a class="headerlink" href="#step-1-system-definition" title="Link to this heading">¶</a></h2>
+<p>First of all, we need to define the system.</p>
+<p>Below these lines you have an example for a DUD system of a typical prm file (See <a class="reference internal" href="../index.html#reference-guide"><span class="std std-ref">Documentation</span></a> for more information):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RBT_PARAMETER_FILE_V1</span><span class="mf">.00</span>
+<span class="n">TITLE</span> <span class="n">gart_DUD</span>
+
+<span class="n">RECEPTOR_FILE</span> <span class="n">gart_rdock</span><span class="o">.</span><span class="n">mol2</span>
+<span class="n">RECEPTOR_FLEX</span> <span class="mf">3.0</span>
+
+<span class="c1">##############################################</span>
+<span class="c1">## CAVITY DEFINITION: REFERENCE LIGAND METHOD</span>
+<span class="c1">##############################################</span>
+<span class="n">SECTION</span> <span class="n">MAPPER</span>
+    <span class="n">SITE_MAPPER</span> <span class="n">RbtLigandSiteMapper</span>
+    <span class="n">REF_MOL</span> <span class="n">xtal</span><span class="o">-</span><span class="n">lig</span><span class="o">.</span><span class="n">sd</span>
+    <span class="n">RADIUS</span> <span class="mf">6.0</span>
+    <span class="n">SMALL_SPHERE</span> <span class="mf">1.0</span>
+    <span class="n">MIN_VOLUME</span> <span class="mi">100</span>
+    <span class="n">MAX_CAVITIES</span> <span class="mi">1</span>
+    <span class="n">VOL_INCR</span> <span class="mf">0.0</span>
+<span class="n">GRIDSTEP</span> <span class="mf">0.5</span>
+<span class="n">END_SECTION</span>
+
+<span class="c1">############################</span>
+<span class="c1">## CAVITY RESTRAINT PENALTY</span>
+<span class="c1">############################</span>
+<span class="n">SECTION</span> <span class="n">CAVITY</span>
+    <span class="n">SCORING_FUNCTION</span> <span class="n">RbtCavityGridSF</span>
+    <span class="n">WEIGHT</span> <span class="mf">1.0</span>
+<span class="n">END_SECTION</span>
+</pre></div>
+</div>
+<p>You will need this generated <code class="docutils literal notranslate"><span class="pre">.prm</span></code> file, a receptor structure mol2 file (<code class="docutils literal notranslate"><span class="pre">gart_rdock.mol2</span></code>) and a ligand file in the cavity (<code class="docutils literal notranslate"><span class="pre">xtal-lig.sd</span></code>) for going to next stage.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The receptor <code class="docutils literal notranslate"><span class="pre">.mol2</span></code> file must be preparated (protonated, charged, etc.) prior to this stage. The program chosen to do so is up to the user. As a suggestion, we usually work with MOE and/or Maestro.</p>
+</div>
+</section>
+<section id="step-2-cavity-generation">
+<h2>Step 2: Cavity generation<a class="headerlink" href="#step-2-cavity-generation" title="Link to this heading">¶</a></h2>
+<p>Once the files are ready, a simple command will generate the cavity:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rbcavity<span class="w"> </span>-was<span class="w"> </span>-d<span class="w"> </span>-r<span class="w"> </span>&lt;PRMFILE&gt;
+</pre></div>
+</div>
+<p>With the <code class="docutils literal notranslate"><span class="pre">-d</span></code> flag a grid <code class="docutils literal notranslate"><span class="pre">.grd</span></code> file is generated. This file can be visualized in a molecular viewer to check the generated cavity.</p>
+<p>For example, in PyMOL (after loading by: <code class="docutils literal notranslate"><span class="pre">pymol</span> <span class="pre">&lt;RECEPTOR&gt;.mol2</span> <span class="pre">&lt;LIGAND&gt;.sd</span> <span class="pre">&lt;GRID&gt;.grd</span></code>), write the following command in the console:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">isomesh</span> <span class="n">cavity</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">GRID</span><span class="o">&gt;.</span><span class="n">grd</span><span class="p">,</span> <span class="mf">0.99</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-docking">
+<h2>Step 3: Docking<a class="headerlink" href="#step-3-docking" title="Link to this heading">¶</a></h2>
+<p>Once the cavity is defined and generated, a 50 runs-per-ligand rDock job can be run straightforwardly with the following command:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.prm</span></code> file, receptor, reference ligand and <code class="docutils literal notranslate"><span class="pre">.as</span></code> cavity file must be in the working directory or pointed by the environmental variable <code class="docutils literal notranslate"><span class="pre">RBT_HOME</span></code>.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rbdock<span class="w"> </span>-i<span class="w"> </span>&lt;INPUT&gt;.sd<span class="w"> </span>-o<span class="w"> </span>&lt;OUTPUT&gt;<span class="w"> </span>-r<span class="w"> </span>&lt;PRMFILE&gt;<span class="w"> </span>-p<span class="w"> </span>dock.prm<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Docking in 3 steps</a><ul>
+<li><a class="reference internal" href="#step-1-system-definition">Step 1: System definition</a></li>
+<li><a class="reference internal" href="#step-2-cavity-generation">Step 2: Cavity generation</a></li>
+<li><a class="reference internal" href="#step-3-docking">Step 3: Docking</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

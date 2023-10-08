@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File formats &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Programs" href="programs.html" />
+    <link rel="prev" title="Molecular files and atom typing" href="atom-typing.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="programs.html" title="Programs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="atom-typing.html" title="Molecular files and atom typing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File formats</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-formats">
+<h1>File formats<a class="headerlink" href="#file-formats" title="Link to this heading">¶</a></h1>
+<section id="prm-file-format">
+<h2>.prm file format<a class="headerlink" href="#prm-file-format" title="Link to this heading">¶</a></h2>
+<p>The .prm file format is an rDock-specific text format and is used for:</p>
+<ul class="simple">
+<li><p>system definition files (known previously as receptor <code class="docutils literal notranslate"><span class="pre">.prm</span></code> files)</p></li>
+<li><p>scoring function definition files</p></li>
+<li><p>search protocol definition files</p></li>
+</ul>
+<p>The format is simple and allows for an arbitrary number of named parameter/value
+pairs to be defined, optionally divided into named sections. Sections provide a
+namespace for parameter names, to allow parameter names to be duplicated within
+different sections. The key features of the format are:</p>
+<ul class="simple">
+<li><p>The first line of the file must be <code class="docutils literal notranslate"><span class="pre">RBT_PARAMETER_FILE_V1.00</span></code> with no
+preceeding whitespace.</p></li>
+<li><p>Subsequent lines may contain either:</p>
+<ol class="arabic simple">
+<li><p>comment lines</p></li>
+<li><p>reserved keywords <code class="docutils literal notranslate"><span class="pre">TITLE</span></code>, <code class="docutils literal notranslate"><span class="pre">SECTION</span></code>, or <code class="docutils literal notranslate"><span class="pre">END_SECTION</span></code></p></li>
+<li><p>parameter name/value pairs</p></li>
+</ol>
+</li>
+<li><p>Comment lines should start with a <code class="docutils literal notranslate"><span class="pre">#</span></code> character in the first column with no
+preceeding whitespace, and are ignored.</p></li>
+<li><p>The reserved words must start in the first column with no preceeding
+whitespace.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">TITLE</span></code> record should occur only once in the file and is used to provide
+a title string for display by various scripts such as run <code class="docutils literal notranslate"><span class="pre">rbscreen.pl</span></code>. The
+keyword should be followed by a single space character and then the title
+string, which may contain spaces. If the <code class="docutils literal notranslate"><span class="pre">TITLE</span></code> line occurs more than once,
+the last occurence is used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SECTION</span></code> records can occur more than once, and should always be paired with
+a closing <code class="docutils literal notranslate"><span class="pre">END_SECTION</span></code> record. The keyword should be followed by a single
+space character and then the section name, which may NOT itself contain
+spaces. All section names must be unique within a .prm file. All parameter
+name/value pairs within the <code class="docutils literal notranslate"><span class="pre">SECTION</span></code> / <code class="docutils literal notranslate"><span class="pre">END_SECTION</span></code> block belong to that
+section.</p></li>
+<li><p>Parameter name/value pairs are read as free-format tokenised text and can have
+preceeding, trailing, and be separated by arbitrary whitespace. This implies
+that the parameter name and value strings themselves are not allowed to
+contain any spaces. The value strings are interpreted as numeric, string, or
+boolean values as appropriate for that parameter. Boolean values should be
+entered as <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> or <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> uppercase strings.</p></li>
+</ul>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The current implementation of the .prm file reader does not tolerate a tab
+character immediately following the <code class="docutils literal notranslate"><span class="pre">TITLE</span></code> and <code class="docutils literal notranslate"><span class="pre">SECTION</span></code> keywords. It is
+very important that the first character after the <code class="docutils literal notranslate"><span class="pre">SECTION</span></code> keyword in
+particular is a true space character, otherwise the reserved word will not be
+detected and the parameters for that section will be ignored.</p>
+</div>
+<p><strong>Example .prm file</strong> In the following example, <code class="docutils literal notranslate"><span class="pre">RECEPTOR_FILE</span></code> is defined in
+the top level namespace. The remaining parameters are defined in the <code class="docutils literal notranslate"><span class="pre">MAPPER</span></code>
+and <code class="docutils literal notranslate"><span class="pre">CAVITY</span></code> namespaces. The indentation is for readability, and has no
+significance in the format.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RBT_PARAMETER_FILE_V1</span><span class="mf">.00</span>
+<span class="n">TITLE</span> <span class="mi">4</span><span class="n">dfr</span> <span class="n">oxido</span><span class="o">-</span><span class="n">reductase</span>
+
+<span class="n">RECEPTOR_FILE</span> <span class="mi">4</span><span class="n">dfr</span><span class="o">.</span><span class="n">mol2</span>
+
+<span class="n">SECTION</span> <span class="n">MAPPER</span>
+   <span class="n">SITE_MAPPER</span> <span class="n">RbtLigandSiteMapper</span>
+   <span class="n">REF_MOL</span> <span class="mi">4</span><span class="n">dfr_c</span><span class="o">.</span><span class="n">sd</span>
+   <span class="n">RADIUS</span> <span class="mf">6.0</span>
+   <span class="n">SMALL_SPHERE</span> <span class="mf">1.0</span>
+   <span class="n">MIN_VOLUME</span> <span class="mi">100</span>
+   <span class="n">MAX_CAVITIES</span> <span class="mi">1</span>
+   <span class="n">VOL_INCR</span> <span class="mf">0.0</span>
+   <span class="n">GRIDSTEP</span> <span class="mf">0.5</span>
+<span class="n">END_SECTION</span>
+
+<span class="n">SECTION</span> <span class="n">CAVITY</span>
+   <span class="n">SCORING_FUNCTION</span> <span class="n">RbtCavityGridSF</span>
+   <span class="n">WEIGHT</span> <span class="mf">1.0</span>
+<span class="n">END_SECTION</span>
+</pre></div>
+</div>
+</section>
+<section id="water-pdb-file-format">
+<span id="id1"></span><h2>Water PDB file format<a class="headerlink" href="#water-pdb-file-format" title="Link to this heading">¶</a></h2>
+<p>rDock requires explicit water PDB files to be in the style as output by the
+<a class="reference external" href="https://www.ks.uiuc.edu/Research/vmd/plugins/dowser/">Dowser</a> program. In
+particular:</p>
+<ul class="simple">
+<li><p>Records can be <code class="docutils literal notranslate"><span class="pre">HETATM</span></code> or <code class="docutils literal notranslate"><span class="pre">ATOM</span></code></p></li>
+<li><p>The atom names must be <code class="docutils literal notranslate"><span class="pre">OW</span></code>, <code class="docutils literal notranslate"><span class="pre">H1</span></code> and <code class="docutils literal notranslate"><span class="pre">H2</span></code></p></li>
+<li><p>The atom records for each water molecule must belong to the same subunit ID</p></li>
+<li><p>The subunit IDs for different waters must be distinct, but do not have to be
+consecutive</p></li>
+<li><p>The atom IDs are not used and do not have to be consecutive (they can even be
+duplicated)</p></li>
+<li><p>The order of the atom records within a subunit is unimportant</p></li>
+<li><p>The temperature factor field of the water oxygens can be used to define the
+per-solvent flexibility modes. The temperature factors of the water hydrogens
+are not used.</p></li>
+</ul>
+<span id="table-conversion-temperature-solvent-flexibility"></span><table class="docutils align-default" id="id2">
+<caption><span class="caption-number">Table 17 </span><span class="caption-text">Conversion of temperature values to solvent flexibility modes</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>PDB
+temperature
+factor</p></th>
+<th class="head"><p>Solvent
+translational
+flexibility</p></th>
+<th class="head"><p>Solvent
+rotational
+flexibility</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIXED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIXED</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIXED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TETHERED</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIXED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FREE</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TETHERED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIXED</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TETHERED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TETHERED</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TETHERED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FREE</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FREE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FIXED</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FREE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TETHERED</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FREE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FREE</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong> Valid rDock PDB file for explicit, flexible waters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">REMARK</span> <span class="n">tmp</span> <span class="mi">1</span><span class="n">YET</span><span class="o">.</span><span class="n">pdb</span> <span class="n">xtal_hoh</span><span class="o">.</span><span class="n">pdb</span>
+<span class="n">HETATM</span> <span class="mi">3540</span> <span class="n">OW</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">106</span> <span class="mf">28.929</span> <span class="mf">12.684</span> <span class="mf">20.864</span> <span class="mf">1.00</span> <span class="mf">1.0</span>
+<span class="n">HETATM</span> <span class="mi">3540</span> <span class="n">H1</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">106</span> <span class="mf">28.034</span> <span class="mf">12.390</span> <span class="mf">21.200</span> <span class="mf">1.00</span>
+<span class="n">HETATM</span> <span class="mi">3540</span> <span class="n">H2</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">106</span> <span class="mf">29.139</span> <span class="mf">12.204</span> <span class="mf">20.012</span> <span class="mf">1.00</span>
+<span class="n">HETATM</span> <span class="mi">3542</span> <span class="n">OW</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">108</span> <span class="mf">27.127</span> <span class="mf">14.068</span> <span class="mf">22.571</span> <span class="mf">1.00</span> <span class="mf">2.0</span>
+<span class="n">HETATM</span> <span class="mi">3542</span> <span class="n">H1</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">108</span> <span class="mf">26.632</span> <span class="mf">13.344</span> <span class="mf">23.052</span> <span class="mf">1.00</span>
+<span class="n">HETATM</span> <span class="mi">3542</span> <span class="n">H2</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">108</span> <span class="mf">27.636</span> <span class="mf">13.673</span> <span class="mf">21.806</span> <span class="mf">1.00</span>
+<span class="n">HETATM</span> <span class="mi">3679</span> <span class="n">OW</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">245</span> <span class="mf">27.208</span> <span class="mf">10.345</span> <span class="mf">27.250</span> <span class="mf">1.00</span> <span class="mf">3.0</span>
+<span class="n">HETATM</span> <span class="mi">3679</span> <span class="n">H1</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">245</span> <span class="mf">27.657</span> <span class="mf">10.045</span> <span class="mf">26.409</span> <span class="mf">1.00</span>
+<span class="n">HETATM</span> <span class="mi">3679</span> <span class="n">H2</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">245</span> <span class="mf">26.296</span> <span class="mf">10.693</span> <span class="mf">27.036</span> <span class="mf">1.00</span>
+<span class="n">HETATM</span> <span class="mi">3680</span> <span class="n">OW</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">246</span> <span class="mf">31.737</span> <span class="mf">12.425</span> <span class="mf">21.110</span> <span class="mf">1.00</span> <span class="mf">4.0</span>
+<span class="n">HETATM</span> <span class="mi">3680</span> <span class="n">H1</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">246</span> <span class="mf">31.831</span> <span class="mf">12.448</span> <span class="mf">22.106</span> <span class="mf">1.00</span>
+<span class="n">HETATM</span> <span class="mi">3680</span> <span class="n">H2</span> <span class="n">HOH</span> <span class="n">W</span> <span class="mi">246</span> <span class="mf">30.775</span> <span class="mf">12.535</span> <span class="mf">20.863</span> <span class="mf">1.00</span>
+</pre></div>
+</div>
+</section>
+<section id="pharmacophore-restraints-file-format">
+<h2>Pharmacophore restraints file format<a class="headerlink" href="#pharmacophore-restraints-file-format" title="Link to this heading">¶</a></h2>
+<p>Pharmacophore restraints are defined in a simple text file, with one restraint
+per line. Each line should contain the following values, separated by commas or
+whitespace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>x<span class="w"> </span>y<span class="w"> </span>z<span class="w"> </span>coords<span class="w"> </span>of<span class="w"> </span>restraint<span class="w"> </span>centre,<span class="w"> </span>tolerance<span class="w"> </span><span class="o">(</span><span class="k">in</span><span class="w"> </span>Angstroms<span class="o">)</span>,<span class="w"> </span>restraint<span class="w"> </span><span class="nb">type</span><span class="w"> </span>string
+</pre></div>
+</div>
+<p>The supported restraint types are:</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-number">Table 18 </span><span class="caption-text">Pharmacophore restraint types</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>String</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Matches</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Any</span></code></p></td>
+<td><p>Any atom</p></td>
+<td><p>Any non-hydrogen atom</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Don</span></code></p></td>
+<td><p>H-bond donor</p></td>
+<td><p>Any neutral donor hydrogen</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Acc</span></code></p></td>
+<td><p>H-bond acceptor</p></td>
+<td><p>Any neutral acceptor</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Aro</span></code></p></td>
+<td><p>Aromatic</p></td>
+<td><p>Any aromatic ring centre (pseudo atom)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Hyd</span></code></p></td>
+<td><p>Hydrophobic</p></td>
+<td><p>Any non-polar hydrogens (if present), any C
+sp3 or S sp3, any C or S not bonded to O sp2,
+any Cl, Br, I</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Hal</span></code></p></td>
+<td><p>Hydrophobic,
+aliphatic</p></td>
+<td><p>Subset of Hyd, sp3 atoms only</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Har</span></code></p></td>
+<td><p>Hydrophobic,
+aromatic</p></td>
+<td><p>Subset of Hyd, aromatic atoms only</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Ani</span></code></p></td>
+<td><p>Anionic</p></td>
+<td><p>Any atom with negative distributed formal
+charge</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Cat</span></code></p></td>
+<td><p>Cationic</p></td>
+<td><p>Any atom with positive distributed formal
+charge</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">File formats</a><ul>
+<li><a class="reference internal" href="#prm-file-format">.prm file format</a></li>
+<li><a class="reference internal" href="#water-pdb-file-format">Water PDB file format</a></li>
+<li><a class="reference internal" href="#pharmacophore-restraints-file-format">Pharmacophore restraints file format</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

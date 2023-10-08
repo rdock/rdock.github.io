@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Scoring functions &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Docking protocol" href="docking-protocol.html" />
+    <link rel="prev" title="Cavity mapping" href="cavity-mapping.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="docking-protocol.html" title="Docking protocol"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cavity-mapping.html" title="Cavity mapping"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Scoring functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="scoring-functions">
+<h1>Scoring functions<a class="headerlink" href="#scoring-functions" title="Link to this heading">¶</a></h1>
+<section id="component-scoring-functions">
+<h2>Component scoring functions<a class="headerlink" href="#component-scoring-functions" title="Link to this heading">¶</a></h2>
+<p>The rDock master scoring function (<span class="math notranslate nohighlight">\(S_{\text{total}}\)</span>) is a weighted sum
+of intermolecular (<span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span>), ligand intramolecular
+(<span class="math notranslate nohighlight">\(S_{\text{intra}}\)</span>), site intramolecular (<span class="math notranslate nohighlight">\(S_{\text{site}}\)</span>), and
+external restraint terms (<span class="math notranslate nohighlight">\(S_{\text{restraint}}\)</span>) <a class="reference internal" href="#equation-eqnstotal">(1)</a>.
+<span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span> is the main term of interest as it represents the
+protein-ligand (or RNA-ligand) interaction score <a class="reference internal" href="#equation-eqnsinter">(2)</a>.
+<span class="math notranslate nohighlight">\(S_{\text{intra}}\)</span> represents the relative energy of the ligand
+conformation <a class="reference internal" href="#equation-eqnsintra">(3)</a>. Similarly, <span class="math notranslate nohighlight">\(S_{\text{site}}\)</span>
+represents the relative energy of the flexible regions of the active site
+<a class="reference internal" href="#equation-eqnssite">(4)</a>. In the current implementation, the only flexible bonds in
+the active site are terminal OH and NH3+ bonds. <span class="math notranslate nohighlight">\(S_{\text{restraint}}\)</span> is
+a collection of non-physical restraint functions that can be used to bias the
+docking calculation in several useful ways <a class="reference internal" href="#equation-eqnsrestraint">(5)</a>.</p>
+<div class="math notranslate nohighlight" id="equation-eqnstotal">
+<span class="eqno">(1)<a class="headerlink" href="#equation-eqnstotal" title="Link to this equation">¶</a></span>\[S^{\text{total}} = S^{\text{inter}} + S^{\text{intra}} + S^{\text{site}} + S^{\text{restraint}}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnsinter">
+<span class="eqno">(2)<a class="headerlink" href="#equation-eqnsinter" title="Link to this equation">¶</a></span>\[\begin{split}S^{\text{inter}} = W_{\text{vdW}}^{\text{inter}} \cdot S_{\text{vdW}}^{\text{inter}}
+                 + W_{\text{polar}}^{\text{inter}} \cdot S_{\text{polar}}^{\text{inter}}
+                 + W_{\text{repul}}^{\text{inter}} \cdot S_{\text{repul}}^{\text{inter}}
+                 + W_{\text{arom}}^{\text{inter}} \cdot S_{\text{arom}}^{\text{inter}} +\\
++ W_{\text{solv}} \cdot S_{\text{solv}} + W_{\text{rot}} \cdot N_{\text{rot}} + W_{\text{const}}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnsintra">
+<span class="eqno">(3)<a class="headerlink" href="#equation-eqnsintra" title="Link to this equation">¶</a></span>\[S^{\text{intra}} = W_{\text{vdW}}^{\text{intra}} \cdot S_{\text{vdW}}^{\text{intra}}
+                 + W_{\text{polar}}^{\text{intra}} \cdot S_{\text{polar}}^{\text{intra}}
+                 + W_{\text{repul}}^{\text{intra}} \cdot S_{\text{repul}}^{\text{intra}}
+                 + W_{\text{dihedral}}^{\text{intra}} \cdot S_{\text{dihedral}}^{\text{intra}}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnssite">
+<span class="eqno">(4)<a class="headerlink" href="#equation-eqnssite" title="Link to this equation">¶</a></span>\[S^{\text{site}} = W_{\text{vdW}}^{\text{site}} \cdot S_{\text{vdW}}^{\text{site}}
+                + W_{\text{polar}}^{\text{site}} \cdot S_{\text{polar}}^{\text{site}}
+                + W_{\text{repul}}^{\text{site}} \cdot S_{\text{repul}}^{\text{site}}
+                + W_{\text{dihedral}}^{\text{site}} \cdot S_{\text{dihedral}}^{\text{site}}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnsrestraint">
+<span class="eqno">(5)<a class="headerlink" href="#equation-eqnsrestraint" title="Link to this equation">¶</a></span>\[S^{\text{restraint}} = W_{\text{cavity}} \cdot S_{\text{cavity}} + W_{\text{tether}} \cdot S_{\text{tether}}
+                     + W_{\text{nmr}} \cdot S_{\text{nmr}} + W_{\text{ph4}} \cdot S_{\text{ph4}}\]</div>
+<p><span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span>, <span class="math notranslate nohighlight">\(S_{\text{intra}}\)</span>, and <span class="math notranslate nohighlight">\(S_{\text{site}}\)</span>
+are built from a common set of constituent potentials, which are described
+below. The main changes to the original RiboDock scoring function
+<a class="reference internal" href="../index.html#ribodock2004" id="id1"><span>[RiboDock2004]</span></a> are:</p>
+<ol class="lowerroman simple">
+<li><p>the replacement of the crude steric potentials (<span class="math notranslate nohighlight">\(S_{\text{lipo}}\)</span> and
+<span class="math notranslate nohighlight">\(S_{\text{rep}}\)</span>) with a true van der Waals potential,
+<span class="math notranslate nohighlight">\(S_{\text{vdW}}\)</span></p></li>
+<li><p>the introduction of two generalised terms for all short range attractive
+(<span class="math notranslate nohighlight">\(S_{\text{polar}}\)</span>) and repulsive (<span class="math notranslate nohighlight">\(S_{\text{repul}}\)</span>) polar
+interactions</p></li>
+<li><p>the implementation of a fast weighed solvent accessible surface (WSAS) area
+solvation term</p></li>
+<li><p>the addition of explicit dihedral potentials</p></li>
+</ol>
+<section id="van-der-waals-potential">
+<h3>van der Waals potential<a class="headerlink" href="#van-der-waals-potential" title="Link to this heading">¶</a></h3>
+<p>We have replaced the <span class="math notranslate nohighlight">\(S_{\text{lipo}}\)</span> and <span class="math notranslate nohighlight">\(S_{\text{rep}}\)</span>
+empirical potentials used in RiboDock with a true vdW potential similar to that
+used by GOLD <a class="reference internal" href="#gold2005" id="id2"><span>[GOLD2005]</span></a>. Atom types and vdW radii were taken from the
+Tripos 5.2 force field and are listed in the <a class="reference internal" href="appendix.html#user-guide-appendix"><span class="std std-ref">Appendix section</span></a> (<a class="reference internal" href="appendix.html#table-vdw-parameters-tripos-52"><span class="std std-numref">Table 21</span></a>).
+Energy well depths are switchable between the original Tripos 5.2 values and
+those used by GOLD, which are calculated from the atomic polarisability and
+ionisation potentials of the atom types involved. Additional atom types were
+created for carbons with implicit hydrogens, as the Tripos force field uses an
+all-atom representation. vdW radii for implicit hydrogen types are increased by
+0.1 Å for each implicit hydrogen, with well depths unchanged. The functional
+form is switchable between a softer 4-8 and a harder 6-12 potential. A quadratic
+potential is used at close range to prevent excessive energy penalties for
+atomic clashes. The potential is truncated at longer range
+(<span class="math notranslate nohighlight">\(1.5 \cdot r_{\min}\)</span>, the sum of the vdW radii).</p>
+<p>The quadratic potential is used at repulsive energies between
+<span class="math notranslate nohighlight">\(e_{\text{cutoff}}\)</span> and <span class="math notranslate nohighlight">\(e_0\)</span>, where <span class="math notranslate nohighlight">\(e_{\text{cutoff}}\)</span> is
+defined as a multiple of the energy well depth
+(<span class="math notranslate nohighlight">\(e_{\text{cutoff}} = \text{ECUT} \cdot e_{\min}\)</span>), and <span class="math notranslate nohighlight">\(e_0\)</span> is the
+energy at zero separation, defined as a multiple of <span class="math notranslate nohighlight">\(e_{\text{cutoff}}\)</span>
+(<span class="math notranslate nohighlight">\(e_0 = \text{E0} \cdot e_{\text{cutoff}}\)</span>). ECUT can vary between 1 and
+120 during the docking search (see <a class="reference internal" href="docking-protocol.html#docking-protocol-genetic-algorithm"><span class="std std-ref">Genetic algorithm subsection</span></a> in <a class="reference internal" href="docking-protocol.html#docking-protocol"><span class="std std-ref">Docking protocol section</span></a>), whereas E0 is fixed at 1.5.</p>
+</section>
+<section id="empirical-attractive-and-repulsive-polar-potentials">
+<h3>Empirical attractive and repulsive polar potentials<a class="headerlink" href="#empirical-attractive-and-repulsive-polar-potentials" title="Link to this heading">¶</a></h3>
+<p>We continue to use an empirical Bohm-like potential to score hydrogen-bonding
+and other short-range polar interactions. The original RiboDock polar terms
+(<span class="math notranslate nohighlight">\(S_{\text{H-bond}}\)</span>, <span class="math notranslate nohighlight">\(S_{\text{posC-acc}}\)</span>,
+<span class="math notranslate nohighlight">\(S_{\text{acc-acc}}\)</span>, <span class="math notranslate nohighlight">\(S_{\text{don-don}}\)</span>) are generalised and
+condensed into two scoring functions, <span class="math notranslate nohighlight">\(S_{\text{polar}}\)</span> and
+<span class="math notranslate nohighlight">\(S_{\text{repul}}\)</span> (<a class="reference internal" href="#equation-eqnspolar">(6)</a> and <a class="reference internal" href="#equation-eqnsrepul">(7)</a>,
+also taking into account <a class="reference internal" href="#equation-eqnf1deltax">(8)</a>, <a class="reference internal" href="#equation-eqnf2i">(9)</a>,
+<a class="reference internal" href="#equation-eqnsgni">(10)</a>, <a class="reference internal" href="#equation-eqnci">(11)</a>, <a class="reference internal" href="#equation-eqnf3deltax">(12)</a>,
+<a class="reference internal" href="#equation-eqnni">(13)</a>, <a class="reference internal" href="#equation-eqnssolv">(14)</a>, <a class="reference internal" href="#equation-eqnssolvrs">(15)</a>,
+<a class="reference internal" href="#equation-eqnssolvpij">(16)</a>, <a class="reference internal" href="#equation-eqnssolvsi">(17)</a>, <a class="reference internal" href="#equation-eqnssolvbij">(18)</a>,
+<a class="reference internal" href="#equation-eqnssolvai">(19)</a>, and <a class="reference internal" href="#equation-eqnssolvdeltagwsas">(20)</a>), which deal with
+attractive and repulsive interactions respectively. Six types of polar
+interaction centres are considered: hydrogen bond donors (DON), metal ions (M+),
+positively charged carbons (C+, as found at the centre of guanidinium,
+amidinium and imidazole groups), hydrogen bond acceptors with pronounced lone
+pair directionality (ACC_LP), acceptors with in-plane preference but limited
+lone-pair directionality (ACC_PLANE), and all remaining acceptors (ACC). The
+ACC_LP type is used for carboxylate oxygens and O sp2 atoms in RNA bases, with
+ACC_PLANE used for other O sp2 acceptors. This distinction between acceptor
+types was not made in RiboDock, in which all acceptors were implicitly of type
+ACC.</p>
+<div class="math notranslate nohighlight" id="equation-eqnspolar">
+<span class="eqno">(6)<a class="headerlink" href="#equation-eqnspolar" title="Link to this equation">¶</a></span>\[S_{\text{polar}} = \sum_{\text{IC1-IC2}} f_1(|\Delta R_{12}|) \cdot \text{ANG}_{\text{IC1}}
+                 \cdot \text{ANG}_{\text{IC2}} \cdot f_2(\text{IC1}) \cdot f_2(\text{IC2})
+                 \cdot f_3(\text{IC1}) \cdot f_3(\text{IC2})\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnsrepul">
+<span class="eqno">(7)<a class="headerlink" href="#equation-eqnsrepul" title="Link to this equation">¶</a></span>\[S_{\text{repul}} = \sum_{\text{IC1-IC2}} f_1(\Delta R_{12}) \cdot \text{ANG}_{\text{IC1}}
+                 \cdot \text{ANG}_{\text{IC2}} \cdot f_2(\text{IC1}) \cdot f_2(\text{IC2})
+                 \cdot f_3(\text{IC1}) \cdot f_3(\text{IC2})\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnf1deltax">
+<span class="eqno">(8)<a class="headerlink" href="#equation-eqnf1deltax" title="Link to this equation">¶</a></span>\[\begin{split}f_1(\Delta X) = \begin{cases}
+                   1                                                                        &amp; \Delta X \leq \Delta X_{\min}\\
+                   1 - \frac{\Delta X - \Delta X_{\min}}{\Delta X_{\max} - \Delta X_{\min}} &amp; \Delta X_{\min} &lt; \Delta X \leq \Delta X_{\max}\\
+                   0                                                                        &amp; \Delta X &gt; \Delta X_{\max}
+                \end{cases}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnf2i">
+<span class="eqno">(9)<a class="headerlink" href="#equation-eqnf2i" title="Link to this equation">¶</a></span>\[f_2(i) = sgn(i)(1 + 0.5 |c_i|)\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnsgni">
+<span class="eqno">(10)<a class="headerlink" href="#equation-eqnsgni" title="Link to this equation">¶</a></span>\[\begin{split}sgn(i) = \begin{cases}
+            -1   &amp; \text{ACC}, \text{ACC}\_\text{LP}, \text{ACC}\_\text{PLANE}\\
+            +0.5 &amp; \text{C+}\\
+            +1.0 &amp; \text{DON}, \text{M+}
+         \end{cases}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnci">
+<span class="eqno">(11)<a class="headerlink" href="#equation-eqnci" title="Link to this equation">¶</a></span>\[c_i = \text{formal charge on primary atom of interaction centre \(i\)}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnf3deltax">
+<span class="eqno">(12)<a class="headerlink" href="#equation-eqnf3deltax" title="Link to this equation">¶</a></span>\[\begin{split}f_3(\Delta X) = \begin{cases}
+                   \sqrt{\frac{N_i}{25}} &amp; \text{macromolecular interaction centres}\\
+                   1                     &amp; \text{ligand interaction centres}
+                \end{cases}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnni">
+<span class="eqno">(13)<a class="headerlink" href="#equation-eqnni" title="Link to this equation">¶</a></span>\[\begin{split}N_i = \text{number of non-hydrogen macromolecule atoms within}\\
+      \text{5 Å radius of primary atom of interaction centre \(i\)}\end{split}\]</div>
+<p>Individual interaction scores are the product of simple scaling functions for
+geometric variables, formal charges and local neighbour density. The scaling
+functions themselves, and the formal charge assignment method, are retained from
+RiboDock. Metals are assigned a uniform formal charge of +1. C+ is considered to
+be a weak donor in this context and scores are scaled by 50 % relative to
+conventional donors by the assignment of <span class="math notranslate nohighlight">\(sgn(i) = 0.5\)</span> in
+<a class="reference internal" href="#equation-eqnf2i">(9)</a>. Pseudo-formal charges are no longer assigned to selected
+RNA base atoms. The geometric functions minimally include an interaction
+distance term, with the majority also including angular terms dependent on the
+type of the interaction centres. Geometric parameters and the angular functions
+are summarised in <a class="reference internal" href="appendix.html#user-guide-appendix"><span class="std std-ref">Appendix section</span></a> (<a class="reference internal" href="appendix.html#table-geometric-parameters-empirical-terms"><span class="std std-numref">Table
+22</span></a> and <a class="reference internal" href="appendix.html#table-angular-functions-polar-interactions"><span class="std std-numref">Table 23</span></a>, respectively).</p>
+<p>The most notable improvements to RiboDock are that attractive (hydrogen bond and
+metal) interactions with ACC_LP and ACC_PLANE acceptors include terms for
+<span class="math notranslate nohighlight">\(\phi\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> (as defined in [ref 3]) to enforce the
+relevant lone pair directionality. These replace the <span class="math notranslate nohighlight">\(\alpha_{\text{ACC}}\)</span>
+dependence, which is retained for the ACC acceptor type. No distinction between
+acceptor types is made for attractive interactions with C+ carbons, or for
+repulsive interactions between acceptors. In these circumstances all acceptors
+are treated as type ACC. Such C+-ACC interactions, which in RiboDock were
+described by only a distance function, (<span class="math notranslate nohighlight">\(S_{\text{posC-acc}}\)</span>) now include
+angular functions around the carbon and acceptor groups. Repulsive interactions
+between donors, and between acceptors, also have an angular dependence. This
+allows a stronger weight, and a longer distance range, to be used to penalise
+disallowed head-to-head interactions without forbidding allowable contacts. One
+of the issues in RiboDock was that it was not possible to include neutral
+acceptors in the acceptor-acceptor repulsion term with a simple distance
+function.</p>
+</section>
+<section id="solvation-potential">
+<h3>Solvation potential<a class="headerlink" href="#solvation-potential" title="Link to this heading">¶</a></h3>
+<p>The desolvation potential in rDock combines a weighted solvent-accessible
+surface area approach <a class="reference internal" href="#wsas2001" id="id3"><span>[WSAS2001]</span></a> with a rapid probabilistic approximation to
+the calculation of solvent-accessible surface areas <a class="reference internal" href="#rasasa1988" id="id4"><span>[RASASA1988]</span></a> based on
+pairwise interatomic distances and radii (<a class="reference internal" href="#equation-eqnssolv">(14)</a>, taking into
+account <a class="reference internal" href="#equation-eqnssolvrs">(15)</a>, <a class="reference internal" href="#equation-eqnssolvpij">(16)</a>,
+<a class="reference internal" href="#equation-eqnssolvsi">(17)</a>, <a class="reference internal" href="#equation-eqnssolvbij">(18)</a>, <a class="reference internal" href="#equation-eqnssolvai">(19)</a>,
+and <a class="reference internal" href="#equation-eqnssolvdeltagwsas">(20)</a>).</p>
+<div class="math notranslate nohighlight" id="equation-eqnssolv">
+<span class="eqno">(14)<a class="headerlink" href="#equation-eqnssolv" title="Link to this equation">¶</a></span>\[S_{\text{solv}} = (\Delta G_{\text{WSAS}}^{\text{site,bound}}
+                - \Delta G_{\text{WSAS}}^{\text{site\(_0\),unbound}})
+                + (\Delta G_{\text{WSAS}}^{\text{ligand,bound}}
+                - \Delta G_{\text{WSAS}}^{\text{ligand\(_0\),unbound}})\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnssolvrs">
+<span class="eqno">(15)<a class="headerlink" href="#equation-eqnssolvrs" title="Link to this equation">¶</a></span>\[r_{\text{s}} = 0.6 \text{Å}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnssolvpij">
+<span class="eqno">(16)<a class="headerlink" href="#equation-eqnssolvpij" title="Link to this equation">¶</a></span>\[\begin{split}p_{ij} = \begin{cases}
+            0.8875 &amp; \quad \text{1-2 intramolecular connections}\\
+            0.3516 &amp; \quad \text{1-3 intramolecular connections}\\
+            0.3156 &amp; \quad \text{1-4 intramolecular connections and above}\\
+            0.3156 &amp; \quad \text{intermolecular interactions}
+         \end{cases}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnssolvsi">
+<span class="eqno">(17)<a class="headerlink" href="#equation-eqnssolvsi" title="Link to this equation">¶</a></span>\[S_i = 4 \pi (r_i + r_s)^2\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnssolvbij">
+<span class="eqno">(18)<a class="headerlink" href="#equation-eqnssolvbij" title="Link to this equation">¶</a></span>\[b_{ij} = \pi (r_i + r_s) (r_j + r_i + 2 r_s - d) \Big(1 - \frac{r_j - r_i}{d}\Big)\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnssolvai">
+<span class="eqno">(19)<a class="headerlink" href="#equation-eqnssolvai" title="Link to this equation">¶</a></span>\[A_i = S_i \prod_j 1 - \frac{p_i p_{ij} b_{ij}}{S_i}\]</div>
+<div class="math notranslate nohighlight" id="equation-eqnssolvdeltagwsas">
+<span class="eqno">(20)<a class="headerlink" href="#equation-eqnssolvdeltagwsas" title="Link to this equation">¶</a></span>\[\Delta G_{\text{WSAS}} = \sum_{i=1}^{n_i} w_i A_i\]</div>
+<p>The calculation is fast enough therefore to be used in docking. We have
+redefined the solvation atom types compared to the original work <a class="reference internal" href="#wsas2001" id="id5"><span>[WSAS2001]</span></a> and
+recalibrated the weights against the same training set of experimental solvation
+free energies in water (395 molecules). The total number of atom types (50,
+including 6 specifically for ionic groups and metals) is slightly lower than in
+original work (54). Our atom types reflect the fact that rDock uses implicit
+non-polar hydrogens. The majority of types are a combination of hybridisation
+state and the number of implicit or explicit hydrogens. All solvation parameters
+are listed in <a class="reference internal" href="appendix.html#user-guide-appendix"><span class="std std-ref">Appendix section</span></a> (<a class="reference internal" href="appendix.html#table-solvation-parameters"><span class="std std-numref">Table 24</span></a>).</p>
+<p><span class="math notranslate nohighlight">\(S_{\text{solv}}\)</span> is calculated as the change in solvation energy of the
+ligand and the docking site upon binding of the ligand. The reference energies
+are taken from the initial conformations of the ligand and site (as read from
+file) and not from the current pose under evaluation. This is done to take into
+account any changes to intramolecular solvation energy. Strictly speaking the
+intramolecular components should be reported separately under
+<span class="math notranslate nohighlight">\(S_{\text{intra}}\)</span> and <span class="math notranslate nohighlight">\(S_{\text{site}}\)</span> but this is not done for
+reasons of computational efficiency.</p>
+</section>
+<section id="dihedral-potential">
+<h3>Dihedral potential<a class="headerlink" href="#dihedral-potential" title="Link to this heading">¶</a></h3>
+<p>Dihedral energies are calculated using Tripos 5.2 dihedral parameters for all
+ligand and site rotatable bonds. Corrections are made to account for the missing
+contributions from the implicit non-polar hydrogens.</p>
+</section>
+</section>
+<section id="intermolecular-scoring-functions-under-evaluation">
+<h2>Intermolecular scoring functions under evaluation<a class="headerlink" href="#intermolecular-scoring-functions-under-evaluation" title="Link to this heading">¶</a></h2>
+<section id="training-sets">
+<h3>Training sets<a class="headerlink" href="#training-sets" title="Link to this heading">¶</a></h3>
+<p>We constructed a combined set of protein-ligand and RNA-ligand complexes for
+training of rDock. Molecular data files for the protein-ligand complexes were
+extracted from the downloaded CCDC/Astex cleanlist <a class="reference internal" href="#astex2007" id="id6"><span>[ASTEX2007]</span></a> and used without
+substantive modification. The only change was to convert ligand MOL2 files to
+MDL SD format using Corina <a class="reference internal" href="#corina1990" id="id7"><span>[CORINA1990]</span></a>, leaving the coordinates and
+protonation states intact.</p>
+<p>Protein MOL2 files were read directly. The ten RNA-ligand NMR structures from
+the RiboDock validation set were supplemented with five RNA-ligand crystal
+structures (1f1t, 1f27, 1j7t, 1lc4, 1mwl) prepared in a similar way. All 15
+RNA-ligand structures have measured binding affinities.</p>
+<p>58 complexes (43 protein-ligand and 15 RNA-ligand) were selected for the initial
+fitting of component scoring function weights. Protein-ligand structures were
+chosen (of any X-ray resolution) that had readily available experimental binding
+affinities <a class="reference internal" href="#pdbbind2004" id="id8"><span>[PDBbind2004]</span></a>. 102 complexes were used for the main validation of
+native docking accuracy for different scoring function designs, consisting of 87
+of the 92 entries in the high resolution (R &lt; 2 Å) clean-list (covalently bound
+ligands removed – 1aec, 1b59, 1tpp, 1vgc, 4est), and the 15 RNA-ligand
+complexes.</p>
+</section>
+<section id="scoring-functions-design">
+<h3>Scoring functions design<a class="headerlink" href="#scoring-functions-design" title="Link to this heading">¶</a></h3>
+<p>Component weights (<span class="math notranslate nohighlight">\(W\)</span>) for each term in the intermolecular scoring
+function (<span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span>) were obtained by least squares regression
+of the component scores to <span class="math notranslate nohighlight">\(\Delta G_{\text{bind}}\)</span> values for the binding
+affinity training set described above (58 entries). Each ligand was subjected
+first to simplex minimisation in the docking site, starting from the
+crystallographic pose, to relieve any minor non-bonded clashes with the site.
+The scoring function used for minimisation was initialised with reasonable
+manually assigned weights. If the fitted weights deviated significantly from the
+initial weights the procedure was repeated until convergence. Certain weights
+(<span class="math notranslate nohighlight">\(W_{\text{repul}}\)</span>, <span class="math notranslate nohighlight">\(W_{\text{rot}}\)</span>, <span class="math notranslate nohighlight">\(W_{\text{const}}\)</span>)
+were constrained to have positive values to avoid non-physical, artefactual
+models. Note that the presence of <span class="math notranslate nohighlight">\(W_{\text{rot}}\)</span> and
+<span class="math notranslate nohighlight">\(W_{\text{const}}\)</span> in <span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span> improves the quality of the
+fit to the binding affinities but does not impact on native ligand docking
+accuracy.</p>
+<p>Ten intermolecular scoring functions were derived with various combinations of
+terms (<a class="reference internal" href="#table-intermolecular-scoring-function-weights"><span class="std std-numref">Table 4</span></a>). SF0
+is a baseline scoring function that has the van der Waals potential only. SF1
+adds a simplified polar potential, without f2 (formal charge) and f3 (neighbour
+density) scaling functions, and with a single acceptor type (ACC) that lacks
+lone-pair directionality. SF2 has the full polar potential (f2 and f3 scaling
+functions, ACC, ACC_LP and ACC_PLANE acceptor types) and adds the repulsive
+polar potential. SF3 has the same functional form as SF2 but with empirical
+weights in regular use at RiboTargets. SF4 replaces the repulsive polar
+potential with the WSAS desolvation potential described above. SF5 has the same
+functional form as SF4 but with empirical weights in regular use at RiboTargets.
+SF6 combines the repulsive polar and desolvation potentials. SF7 has the same
+functional form as SF2 and SF3 but with weights for <span class="math notranslate nohighlight">\(W_{\text{vdW}}\)</span> and
+<span class="math notranslate nohighlight">\(W_{\text{polar}}\)</span> taken from SF5. SF8 and SF9 add the crude aromatic term
+from RiboDock <a class="reference internal" href="../index.html#ribodock2004" id="id9"><span>[RiboDock2004]</span></a> to SF3 and SF5 respectively. The
+<span class="math notranslate nohighlight">\(S_{\text{intra}}\)</span> functional form and weights were held constant, and
+equivalent to SF3, to avoid any differences in ligand conformational energies
+affecting the docking results. As the <span class="math notranslate nohighlight">\(S_{\text{site}}\)</span> scores are
+calculated simultaneously with <span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span> (for computational
+reasons) the <span class="math notranslate nohighlight">\(S_{\text{site}}\)</span> functional form and weights vary in line
+with <span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span>. There is surprisingly little variation in
+correlation coefficient (R) and root mean square error (RMSE) in predicted
+binding energy over the ten scoring functions (<a class="reference internal" href="#table-intermolecular-scoring-function-weights"><span class="std std-numref">Table 4</span></a>). The best results are obtained
+with SF4 (R = 0.67, RMSE = 9.6 kJ/mol).</p>
+<span id="table-intermolecular-scoring-function-weights"></span><table class="docutils align-default" id="id12">
+<caption><span class="caption-number">Table 4 </span><span class="caption-text">Intermolecular scoring function weights under evaluation (a =
+        constrained to be &gt; zero; b = fixed values; c = correlation
+        coefficient (R), and root mean squared error (RMSE) between
+        <span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span> and <span class="math notranslate nohighlight">\(\Delta G_{\text{bind}}\)</span>, for
+        minimised experimental ligand poses, over binding affinity validation
+        set (58 entries)).</span><a class="headerlink" href="#id12" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>SF</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(W_{\text{vdW}}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(W_{\text{polar}}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(W_{\text{solv}}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(W_{\text{repul}}\)</span><sup>a</sup></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(W_{\text{arom}}\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(W_{\text{rot}}\)</span><sup>a</sup></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(W_{\text{const}}\)</span><sup>a</sup></p></th>
+<th class="head"><p>R<sup>c</sup></p></th>
+<th class="head"><p>RMSE<sup>c</sup></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>1.4</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0.62</p></td>
+<td><p>10.9</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>1.126</p></td>
+<td><p>2.36</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>0.217</p></td>
+<td><p>0</p></td>
+<td><p>0.64</p></td>
+<td><p>10.2</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>1.192</p></td>
+<td><p>2.087</p></td>
+<td><p>-</p></td>
+<td><p>2.984</p></td>
+<td><p>-</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0.63</p></td>
+<td><p>10.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>1.000<sup>b</sup></p></td>
+<td><p>3.400<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>5.000<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0.59</p></td>
+<td><p>10.9</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>1.317</p></td>
+<td><p>3.56</p></td>
+<td><p>0.449</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>0</p></td>
+<td><p>4.</p></td>
+<td><p>0.67</p></td>
+<td><p>9.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>1.500<sup>b</sup></p></td>
+<td><p>5.000<sup>b</sup></p></td>
+<td><p>0.500<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>0.568</p></td>
+<td><p>4.782</p></td>
+<td><p>0.62</p></td>
+<td><p>10.7</p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>1.314</p></td>
+<td><p>4.447</p></td>
+<td><p>0.500<sup>b</sup></p></td>
+<td><p>5.000<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0.62</p></td>
+<td><p>10.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>1.500<sup>b</sup></p></td>
+<td><p>5.000<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>5.000<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>0.986</p></td>
+<td><p>12.046</p></td>
+<td><p>0.55</p></td>
+<td><p>12.9</p></td>
+</tr>
+<tr class="row-even"><td><p>8</p></td>
+<td><p>1.000<sup>b</sup></p></td>
+<td><p>3.400<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>5.000<sup>b</sup></p></td>
+<td><p>-1.6<sup>b</sup></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0.53</p></td>
+<td><p>11.8</p></td>
+</tr>
+<tr class="row-odd"><td><p>9</p></td>
+<td><p>1.500<sup>b</sup></p></td>
+<td><p>5.000<sup>b</sup></p></td>
+<td><p>0.500<sup>b</sup></p></td>
+<td><p>-</p></td>
+<td><p>-1.6<sup>b</sup></p></td>
+<td><p>0.647</p></td>
+<td><p>5.056</p></td>
+<td><p>0.58</p></td>
+<td><p>11.5</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="scoring-functions-validation">
+<h3>Scoring functions validation<a class="headerlink" href="#scoring-functions-validation" title="Link to this heading">¶</a></h3>
+<p>The ability of the ten intermolecular scoring functions (SF0 to SF9) to
+reproduce known ligand binding modes was determined on the combined test set of
+102 protein-ligand and RNA-ligand complexes. The intra-ligand scoring function
+(<span class="math notranslate nohighlight">\(S_{\text{intra}}\)</span>) was kept constant, with component weights equivalent
+to SF3, and a dihedral weight of 0.5. Terminal OH and NH3 groups on the receptor
+in the vicinity of the docking site were fully flexible during docking. Ligand
+pose populations of size <span class="math notranslate nohighlight">\(N_{\text{pop}} = 300\)</span> were collected for each
+complex and intermolecular scoring function combination. The population size was
+increased to <span class="math notranslate nohighlight">\(N_{\text{pop}} = 1000\)</span> for two of the most promising scoring
+functions (SF3 and SF5).</p>
+<p>Protein-ligand docking accuracy is remarkably insensitive to scoring function
+changes. Almost half of the ligand binding modes can be reproduced with a vdW
+potential only (SF0). The addition of a simplified polar potential (SF1)
+increases the accuracy to over 70 % of protein-ligand test cases predicted to
+within 2 Å RMSD. The success rate increases further to 78 % with SF3, which has
+the full attractive and repulsive polar potentials, and empirically adjusted
+weights relative to SF2. Subsequent changes to the component terms and weights,
+including the addition of the desolvation potential, have little or no impact on
+the protein-ligand RMSD metric.</p>
+<p>The nucleic acid set shows a much greater sensitivity to scoring function
+changes. This can in part be explained by the smaller sample size that amplifies
+the percentage changes in the RMSD metric, but nevertheless the trends are
+clear. There is a gradual increase in docking accuracy from SF0 (37 %) to SF3
+(52 %), but absolute performance is much lower than for the protein-ligand test
+set. This level of docking accuracy for nucleic acid-ligand complexes is broadly
+consistent with the original RiboDock scoring function, despite the fact that
+the original steric term (LIPO) has been replaced by a true vdW potential. The
+introduction of the desolvation potential in place of the empirical repulsive
+polar potential (in SF4 and SF5) results in a substantial improvement in
+accuracy, to around 70 % of test cases within 2 Å RMSD. Subsequent changes (SF6
+to SF9) degrade the accuracy. The lower performance of SF7, which has the higher
+weights for the VDW and POLAR terms taken from SF5 but lacks the desolvation
+potential, demonstrates that it is the desolvation term itself that is having
+the beneficial effect, and not merely the reweighting of the other terms. The
+inclusion of the geometric aromatic term in SF8 and SF9 has a detrimental
+impact on the performance of SF3 and SF5 respectively.</p>
+<p>Overall, SF5 achieves optimum performance across proteins and nucleic acids
+(76.7 % within 2 Å RMSD). SF3 (no desolvation potential) and SF5 (with
+desolvation potential) were selected as the best intermolecular scoring
+functions. Finally, these two scoring functions, SF3 and SF5, were the ones
+implemented in rDock with the names of <code class="docutils literal notranslate"><span class="pre">dock.prm</span></code> and <code class="docutils literal notranslate"><span class="pre">dock_solv.prm</span></code>,
+respectively.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In virtual screening campaigns, or in experiments where score of different
+ligands is compared, the best scoring poses for each molecule (as defined by
+the lowest <span class="math notranslate nohighlight">\(S_{\text{total}}\)</span> within the sample) are sorted and ranked
+by <span class="math notranslate nohighlight">\(S_{\text{inter}}\)</span>. In other words, the contributions to
+<span class="math notranslate nohighlight">\(S_{\text{total}}\)</span> from <span class="math notranslate nohighlight">\(S_{\text{intra}}\)</span>,
+<span class="math notranslate nohighlight">\(S_{\text{site}}\)</span> and <span class="math notranslate nohighlight">\(S_{\text{restraint}}\)</span> are ignored when
+comparing poses between different ligands against the same target. The
+rationale for this is that, in particular, the ligand intramolecular scores
+are not on an absolute scale and can differ markedly between different
+ligands.</p>
+</div>
+</section>
+</section>
+<section id="code-implementation">
+<h2>Code implementation<a class="headerlink" href="#code-implementation" title="Link to this heading">¶</a></h2>
+<p>Scoring functions for docking are constructed at run-time (by <code class="docutils literal notranslate"><span class="pre">RbtSFFactory</span></code>
+class) from scoring function definition files (rDock <code class="docutils literal notranslate"><span class="pre">.prm</span></code> format). The
+default location for scoring function definition files is
+<code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/sf/</span></code>.</p>
+<p>The total score is an aggregate of intermolecular ligand-receptor and
+ligand-solvent interactions (branch <code class="docutils literal notranslate"><span class="pre">SCORE.INTER</span></code>), intra-ligand interactions
+(branch <code class="docutils literal notranslate"><span class="pre">SCORE.INTRA</span></code>), intra-receptor, intra-solvent and receptor-solvent
+interactions (branch <code class="docutils literal notranslate"><span class="pre">SCORE.SYSTEM</span></code>), and external restraint penalties (branch
+<code class="docutils literal notranslate"><span class="pre">SCORE.RESTR</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SCORE.INTER</span></code>, <code class="docutils literal notranslate"><span class="pre">SCORE.INTRA</span></code> and <code class="docutils literal notranslate"><span class="pre">SCORE.SYSTEM</span></code> branches consist of
+weighted sums of interaction terms as shown below. Note that not all terms
+appear in all branches. See the rDock draft paper <a class="reference internal" href="../index.html#rdock2014" id="id10"><span>[rDock2014]</span></a> for more details
+on the implementation of these terms.</p>
+<table class="docutils align-default" id="id13">
+<caption><span class="caption-number">Table 5 </span><span class="caption-text">Scoring function terms and C++ implementation classes.</span><a class="headerlink" href="#id13" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Term</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">INTER</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">INTRA</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">SYSTEM</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>VDW</p></td>
+<td><p>van der Waals</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtVdWIdxSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtVdwIntraSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtVdwIdxSF</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>VDW</p></td>
+<td><p>van der Waals (grid based)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtVdwGridSF</span></code></p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><td><p>POLAR</p></td>
+<td><p>Attractive polar</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtPolarIdxSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtPolarIntraSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtPolarIdxSF</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>REPUL</p></td>
+<td><p>Repulsive polar</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtPolarIdxSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtPolarIntraSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtPolarIdxSF</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>SOLV</p></td>
+<td><p>Desolvation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtSAIdxSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtSAIdxSF</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtSAIdxSF</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>CONST</p></td>
+<td><p>Translation/rotational binding entropy
+penalty</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtConstSF</span></code></p></td>
+<td><p>N/A</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtConstSF</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>ROT</p></td>
+<td><p>Torsional binding entropy penalty</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RbtRotSF</span></code></p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+</tr>
+</tbody>
+</table>
+<p>Two intermolecular scoring functions (<code class="docutils literal notranslate"><span class="pre">SCORE.INTER</span></code> branch) have been
+validated. These are known informally as the standard scoring function and the
+desolvation scoring function (referred to as SF3 and SF5 respectively in the
+rDock draft paper <a class="reference internal" href="../index.html#rdock2014" id="id11"><span>[rDock2014]</span></a>). The standard intermolecular scoring function
+consists of VDW, POLAR and REPUL terms. In the desolvation scoring function, the
+REPUL term is replaced by a more finely parameterised desolvation potential
+(SOLV term) based on a weighted solvent-accessible surface (WSAS) area model.
+The ligand intramolecular scoring function (<code class="docutils literal notranslate"><span class="pre">SCORE.INTRA</span></code> branch) remains
+constant in both cases, and has the same terms and weights as the standard
+intermolecular scoring function.</p>
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Scoring function data files.</span><a class="headerlink" href="#id14" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RbtInterIdxSF.prm</span></code></p></td>
+<td><p>Intermolecular scoring function definition (standard scoring function, SF3)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RbtInterGridSF.prm</span></code></p></td>
+<td><p>As above, but vdW term uses a precalculated grid</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RbtSolvIdxSF.prm</span></code></p></td>
+<td><p>Intermolecular scoring function definition (desolvation scoring function, SF5)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">calcgrid_vdw1.prm</span></code></p></td>
+<td><p>vdW term only (<code class="docutils literal notranslate"><span class="pre">ECUT</span> <span class="pre">=</span> <span class="pre">1</span></code>), for calculating vdW grid (used by <code class="docutils literal notranslate"><span class="pre">rbcalcgrid</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">calcgrid_vdw5.prm</span></code></p></td>
+<td><p>vdW term only (<code class="docutils literal notranslate"><span class="pre">ECUT</span> <span class="pre">=</span> <span class="pre">5</span></code>), for calculating vdW grid (used by <code class="docutils literal notranslate"><span class="pre">rbcalcgrid</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Tripos52_vdw.prm</span></code></p></td>
+<td><p>vdW term parameter file</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Tripos52_dihedrals.prm</span></code></p></td>
+<td><p>Dihedral term parameter file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">solvation_asp.prm</span></code></p></td>
+<td><p>Desolvation term parameter file</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>External restraint penalty terms are defined by the user in the system
+definition <code class="docutils literal notranslate"><span class="pre">.prm</span></code> file. Originally, rDock did not support flexible receptor
+dihedrals or explicit structural waters, and the overall scoring function
+consisted of just the <code class="docutils literal notranslate"><span class="pre">SCORE.INTER</span></code> and <code class="docutils literal notranslate"><span class="pre">SCORE.INTRA</span></code> branches. At that
+time, the intermolecular scoring function definition file (e.g.
+<code class="docutils literal notranslate"><span class="pre">RbtInterIdxSF.prm</span></code>) represented precisely the <code class="docutils literal notranslate"><span class="pre">SCORE.INTER</span></code> terms, and
+the intramolecular definition file (<code class="docutils literal notranslate"><span class="pre">RbtIntraSF.prm</span></code>) represented precisely
+the <code class="docutils literal notranslate"><span class="pre">SCORE.INTRA</span></code> terms. With the introduction of receptor flexibility and
+explicit structural waters (and hence the need for the <code class="docutils literal notranslate"><span class="pre">SCORE.SYSTEM</span></code>
+branch), the situation is slightly more complex. For implementation reasons,
+many of the terms reported under <code class="docutils literal notranslate"><span class="pre">SCORE.SYSTEM</span></code> (with the exception of the
+dihedral term) are calculated simultaneously with the terms reported under
+<code class="docutils literal notranslate"><span class="pre">SCORE.INTER</span></code>, and hence their parameterisation is defined implicitly in
+the intermolecular scoring function definition file. In contrast, the ligand
+intramolecular scoring function terms can be controlled independently.</p>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<div role="list" class="citation-list">
+<div class="citation" id="astex2007" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">ASTEX2007</a><span class="fn-bracket">]</span></span>
+<p>Hartshorn, M.J., Verdonk, M.L., Chessari, G., Brewerton, S.C.,
+Mooij, W.T.M., Mortenson, P.N., and Murray, C.W. (2007). Diverse,
+High-Quality Test Set for the Validation of Protein-Ligand
+Docking Performance. J. Med. Chem. 50, 726–741.
+<a class="reference external" href="https://doi.org/10.1021/jm061277y">doi:10.1021/jm061277y</a></p>
+</div>
+<div class="citation" id="gold2005" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">GOLD2005</a><span class="fn-bracket">]</span></span>
+<p>Verdonk, M.L., Chessari, G., Cole, J.C., Hartshorn, M.J.,
+Murray, C.W., Nissink, J.W.M., Taylor, R.D., and
+Taylor, R. (2005). Modeling Water Molecules in Protein-Ligand
+Docking Using GOLD. J. Med. Chem. 48, 6504–6515.
+<a class="reference external" href="https://doi.org/10.1021/jm050543p">doi:10.1021/jm050543p</a></p>
+</div>
+<div class="citation" id="pdbbind2004" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">PDBbind2004</a><span class="fn-bracket">]</span></span>
+<p>Wang, R., Fang, X., Lu, Y., and Wang, S. (2004). The PDBbind
+Database: Collection of Binding Affinities for Protein-Ligand
+Complexes with Known Three-Dimensional Structures. J. Med.
+Chem. 47, 2977–2980. <a class="reference external" href="https://doi.org/10.1021/jm030580l">doi:10.1021/jm030580l</a></p>
+</div>
+<div class="citation" id="wsas2001" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>WSAS2001<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Wang, J., Wang, W., Huo, S., Lee, M., and Kollman, P.A. (2001).
+Solvation Model Based on Weighted Solvent Accessible Surface Area.
+J. Phys. Chem. B 105, 5055–5067. <a class="reference external" href="https://doi.org/10.1021/jp0102318">doi:10.1021/jp0102318</a></p>
+</div>
+<div class="citation" id="corina1990" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">CORINA1990</a><span class="fn-bracket">]</span></span>
+<p>Gasteiger, J., Rudolph, C., and Sadowski, J. (1990). Automatic
+generation of 3D-atomic coordinates for organic molecules.
+Tetrahedron Computer Methodology 3, 537–547.
+<a class="reference external" href="https://doi.org/10.1016/0898-5529(90)90156-3">10.1016/0898-5529(90)90156-3</a></p>
+</div>
+<div class="citation" id="rasasa1988" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">RASASA1988</a><span class="fn-bracket">]</span></span>
+<p>Hasel, W., Hendrickson, T.F., and Still, W.C. (1988). A rapid
+approximation to the solvent accessible surface areas of atoms.
+Tetrahedron Computer Methodology 1, 103–116.
+<a class="reference external" href="https://doi.org/10.1016/0898-5529(88)90015-2">doi:10.1016/0898-5529(88)90015-2</a></p>
+</div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Scoring functions</a><ul>
+<li><a class="reference internal" href="#component-scoring-functions">Component scoring functions</a><ul>
+<li><a class="reference internal" href="#van-der-waals-potential">van der Waals potential</a></li>
+<li><a class="reference internal" href="#empirical-attractive-and-repulsive-polar-potentials">Empirical attractive and repulsive polar potentials</a></li>
+<li><a class="reference internal" href="#solvation-potential">Solvation potential</a></li>
+<li><a class="reference internal" href="#dihedral-potential">Dihedral potential</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#intermolecular-scoring-functions-under-evaluation">Intermolecular scoring functions under evaluation</a><ul>
+<li><a class="reference internal" href="#training-sets">Training sets</a></li>
+<li><a class="reference internal" href="#scoring-functions-design">Scoring functions design</a></li>
+<li><a class="reference internal" href="#scoring-functions-validation">Scoring functions validation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#code-implementation">Code implementation</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

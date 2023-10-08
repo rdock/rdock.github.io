@@ -1,0 +1,47 @@
+body { 
+    background-color: #ffffff;
+    background-image: url('_static/body-bg.png');
+    background-repeat: repeat;
+    background-position: top left;
+    background-attachment: fixed;
+}
+
+/* @import url('https://fonts.googleapis.com/css?family=Raleway%3A100&#038;ver=3.7.1'); */
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+
+body {
+    font-family: 'Raleway', sans-serif;
+}
+
+a {
+    color: 
+}
+
+div.body {
+    min-width: 240px;
+}
+
+div.footer a {
+    color: #4a73ad;
+}
+
+a {
+    color: #4a73ad;
+}
+
+a:visited {
+    color: #4a73ad;
+}
+
+a:hover {
+    color: #643b7a;
+}
+
+h1, h2, h3 {
+    color: #4a73ad;
+}
+
+h2 {
+    border-bottom: 1px solid #4a73ad;
+}
+

@@ -90,7 +90,7 @@ name rDock.
 
 In 2012, Vernalis and the University of York agreed to release the program as
 open-source software [rDock2014]_. This version is developed with support from
-the `University of Barcelona <http://www.ub.edu/cbdd/>`__ --
+the `University of Barcelona <http://www.ub.edu/bl/>`__ --
 `github.com/cbdd/rdock <https://github.com/cbdd/rdock/>`__.
 
 License
@@ -100,19 +100,9 @@ License
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
 
    license
-
-Contributor concordat
-^^^^^^^^^^^^^^^^^^^^^
-
-|Dock| adheres both to No Code of Conduct and Code of Merit.
-
-.. toctree::
-   :maxdepth: 2
-
-   code-of-counduct
-   code-of-merit
 
 References
 ^^^^^^^^^^
@@ -183,9 +173,9 @@ For installation details and first-users instructions, please visit
    reference-guide/programs
    reference-guide/appendix
 
-.. _user-guide:
+.. _tutorials:
 
-User guide
+Tutorials
 ----------
 
 .. toctree::

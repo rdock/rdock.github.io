@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuration &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Cavity mapping" href="cavity-mapping.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="cavity-mapping.html" title="Cavity mapping"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Configuration</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h1>
+<p>Before launching rDock, make sure the following environment variables are
+defined. Precise details are likely to be site-specific.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RBT_ROOT</span></code> environment variable: should be defined to point to the rDock
+installation directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RBT_HOME</span></code> environment variable: is optional, but can be defined to to point
+to a user project directory containing rDock input files and customised data
+files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable: <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/bin</span></code> should be added to the
+<code class="docutils literal notranslate"><span class="pre">$PATH</span></code> environment variable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>: <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/lib</span></code> should be added to the
+<code class="docutils literal notranslate"><span class="pre">$LD_LIBRARY_PATH</span></code> environment variable.</p></li>
+</ul>
+<section id="input-file-locations">
+<h2>Input file locations<a class="headerlink" href="#input-file-locations" title="Link to this heading">¶</a></h2>
+<p>The search path for the majority of input files for rDock is:</p>
+<ul class="simple">
+<li><p>Current working directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$RBT_HOME</span></code>, if defined</p></li>
+<li><p>The appropriate subdirectory of <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/</span></code>. For example, the default
+location for scoring function files is <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/sf/</span></code>.</p></li>
+</ul>
+<p>The exception is that input ligand SD files are always specified as an absolute
+path. If you wish to customise a scoring function or docking protocol, it is
+sufficient to copy the relevant file to the current working directory or to
+<code class="docutils literal notranslate"><span class="pre">$RBT_HOME</span></code>, and to modify the copied file.</p>
+</section>
+<section id="launching-executables">
+<h2>Launching executables<a class="headerlink" href="#launching-executables" title="Link to this heading">¶</a></h2>
+<p>For small scale experimentation, the rDock executables can be launched directly
+from the command line. However, serious virtual screening campaigns will likely
+need access to a compute farm. In common with other docking tools, rDock uses
+the embarrassingly parallel approach to distributed computing. Large ligand
+libraries are split into smaller chunks, each of which is docked independently
+on a single machine. Docking jobs are controlled by a distributed resource
+manager (DRM) such as Condor or SGE.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#input-file-locations">Input file locations</a></li>
+<li><a class="reference internal" href="#launching-executables">Launching executables</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

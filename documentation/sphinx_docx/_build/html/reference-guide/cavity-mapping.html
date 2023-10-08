@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Cavity mapping &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Scoring functions" href="scoring-functions.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="scoring-functions.html" title="Scoring functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Cavity mapping</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="cavity-mapping">
+<h1>Cavity mapping<a class="headerlink" href="#cavity-mapping" title="Link to this heading">¶</a></h1>
+<p>Virtual screening is very rarely conducted against entire macromolecules. The
+usual practice is to dock small molecules in a much more confined region of
+interest. rDock makes a clear distinction between the region the ligand is
+allowed to explore (known here as the docking site), and the receptor atoms that
+need to be included in order to calculate the score correctly. The former is
+controlled by the cavity mapping algorithm, whilst the latter is scoring
+function dependent as it depends on the distance range of each component term
+(for example, vdW range &gt;&gt; polar range). For this reason, it is usual practice
+with rDock to prepare intact receptor files (rather than truncated spheres
+around the region of interest), and to allow each scoring function term to
+isolate the relevant receptor atoms within range of the docking site.</p>
+<p>rDock provides two methods for defining the docking site:</p>
+<ul class="simple">
+<li><p>Two sphere method</p></li>
+<li><p>Reference ligand method</p></li>
+</ul>
+<p>The two methods are explained and illustrated below using PDB structure 2hr1.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All the keywords found in capital letters in following cavity mapping methods
+explanation (e.g. <code class="docutils literal notranslate"><span class="pre">RADIUS</span></code>), make reference to the parameters defined in
+<code class="docutils literal notranslate"><span class="pre">prm</span></code> rDock configuration file. For more information, go to <a class="reference internal" href="system-definition-file.html#sdf-cavity-mapping"><span class="std std-ref">Cavity
+mapping subsection</span></a> in <a class="reference internal" href="system-definition-file.html#system-definition-file"><span class="std std-ref">System definition file
+section</span></a>.</p>
+</div>
+<section id="two-sphere-method">
+<h2>Two sphere method<a class="headerlink" href="#two-sphere-method" title="Link to this heading">¶</a></h2>
+<p>The two sphere method aims to find cavities that are accessible to a small
+sphere (of typical atomic or solvent radius) but are inaccessible to a larger
+sphere. The larger sphere probe will eliminate flat and convex regions of the
+receptor surface, and also shallow cavities. The regions that remain and are
+accessible to the small sphere are likely to be the nice well defined cavities
+of interest for drug design purposes.</p>
+<p>The method is explained and illustrated in
+<a class="reference internal" href="#figure-two-sphere-method-1"><span class="std std-numref">Figure 3</span></a>,
+<a class="reference internal" href="#figure-two-sphere-method-2"><span class="std std-numref">Figure 4</span></a>,
+<a class="reference internal" href="#figure-two-sphere-method-3"><span class="std std-numref">Figure 5</span></a>,
+<a class="reference internal" href="#figure-two-sphere-method-4"><span class="std std-numref">Figure 6</span></a>,
+<a class="reference internal" href="#figure-two-sphere-method-5"><span class="std std-numref">Figure 7</span></a>,
+<a class="reference internal" href="#figure-two-sphere-method-6"><span class="std std-numref">Figure 8</span></a>, and
+<a class="reference internal" href="#figure-two-sphere-method-7"><span class="std std-numref">Figure 9</span></a>.</p>
+<figure class="align-default" id="id1">
+<span id="figure-two-sphere-method-1"></span><img alt="../_images/two-sphere-method-1.jpg" src="../_images/two-sphere-method-1.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">A grid is placed over the cavity mapping region, encompassing a sphere of
+radius = <code class="docutils literal notranslate"><span class="pre">RADIUS</span></code>, center = <code class="docutils literal notranslate"><span class="pre">CENTER</span></code>. Cavity mapping is restricted to
+this sphere. All cavities located will be wholly within this sphere. Any
+cavity that would otherwise protrude beyond the cavity mapping sphere will be
+truncated at the periphery of the sphere.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<span id="figure-two-sphere-method-2"></span><img alt="../_images/two-sphere-method-2.jpg" src="../_images/two-sphere-method-2.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 4 </span><span class="caption-text">Grid points within the volume occupied by the receptor are excluded (coloured
+red). The radii of the receptor atoms are increased temporarily by
+<code class="docutils literal notranslate"><span class="pre">VOL_INCR</span></code> in this step.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<span id="figure-two-sphere-method-3"></span><img alt="../_images/two-sphere-method-3.jpg" src="../_images/two-sphere-method-3.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 5 </span><span class="caption-text">Probes of radii <code class="docutils literal notranslate"><span class="pre">LARGE_SPHERE</span></code> are placed on each remaining unallocated
+grid point and checked for clashes with receptor excluded volume. To
+eliminate edge effects, the grid is extended beyond the cavity mapping region
+by the diameter of the large sphere (for this step only). This allows the
+large probe to be placed on grid points outside of the cavity mapping region,
+yet partially protrude into the cavity mapping region.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id4">
+<span id="figure-two-sphere-method-4"></span><img alt="../_images/two-sphere-method-4.jpg" src="../_images/two-sphere-method-4.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">All grid points within the cavity mapping region that are accessible to the
+large probe are excluded (coloured green).</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id5">
+<span id="figure-two-sphere-method-5"></span><img alt="../_images/two-sphere-method-5.jpg" src="../_images/two-sphere-method-5.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 7 </span><span class="caption-text">Probes of radii <code class="docutils literal notranslate"><span class="pre">SMALL_SPHERE</span></code> are placed on each remaining grid point and
+checked for clashes with receptor excluded volume (red) or large probe
+excluded volume (green).</span><a class="headerlink" href="#id5" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id6">
+<span id="figure-two-sphere-method-6"></span><img alt="../_images/two-sphere-method-6.jpg" src="../_images/two-sphere-method-6.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 8 </span><span class="caption-text">All grid points that are accessible to the small probe are selected (yellow).</span><a class="headerlink" href="#id6" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id7">
+<span id="figure-two-sphere-method-7"></span><img alt="../_images/two-sphere-method-7.jpg" src="../_images/two-sphere-method-7.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">The final selection of cavity grid points is divided into distinct cavities
+(contiguous regions). In this example only one distinct cavity is found.
+User-defined filters of <code class="docutils literal notranslate"><span class="pre">MIN_VOLUME</span></code> and <code class="docutils literal notranslate"><span class="pre">MAX_CAVITIES</span></code> are applied at
+this stage to select a subset of cavities if required. Note that the filters
+will accept or reject intact cavities only.</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="reference-ligand-method">
+<h2>Reference ligand method<a class="headerlink" href="#reference-ligand-method" title="Link to this heading">¶</a></h2>
+<p>The reference ligand method provides a much easier option to define a docking
+volume of a given size around the binding mode of a known ligand, and is
+particularly appropriate for large scale automated validation experiments.</p>
+<p>The method is explained and illustrated in
+<a class="reference internal" href="#figure-reference-ligand-method-1"><span class="std std-numref">Figure 10</span></a>,
+<a class="reference internal" href="#figure-reference-ligand-method-2"><span class="std std-numref">Figure 11</span></a>,
+<a class="reference internal" href="#figure-reference-ligand-method-3"><span class="std std-numref">Figure 12</span></a>, and
+<a class="reference internal" href="#figure-reference-ligand-method-4"><span class="std std-numref">Figure 13</span></a>.</p>
+<figure class="align-default" id="id8">
+<span id="figure-reference-ligand-method-1"></span><img alt="../_images/reference-ligand-method-1.jpg" src="../_images/reference-ligand-method-1.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 10 </span><span class="caption-text">Reference coordinates are read from <code class="docutils literal notranslate"><span class="pre">REF_MOL</span></code>. A grid is placed over the
+cavity mapping region, encompassing overlapping spheres of radius =
+<code class="docutils literal notranslate"><span class="pre">RADIUS</span></code>, centered on each atom in <code class="docutils literal notranslate"><span class="pre">REF_MOL</span></code>. Grid points outside of the
+overlapping spheres are excluded (coloured green). Grid points within the
+volume occupied by the receptor are excluded (coloured red). The vdW radii of
+the receptor atoms are increased by <code class="docutils literal notranslate"><span class="pre">VOL_INCR</span></code> in this step.</span><a class="headerlink" href="#id8" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id9">
+<span id="figure-reference-ligand-method-2"></span><img alt="../_images/reference-ligand-method-2.jpg" src="../_images/reference-ligand-method-2.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 11 </span><span class="caption-text">Probes of radii <code class="docutils literal notranslate"><span class="pre">SMALL_SPHERE</span></code> are placed on each remaining grid point and
+checked for clashes with red or green regions.</span><a class="headerlink" href="#id9" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id10">
+<span id="figure-reference-ligand-method-3"></span><img alt="../_images/reference-ligand-method-3.jpg" src="../_images/reference-ligand-method-3.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 12 </span><span class="caption-text">All grid points that are accessible to the small probe are selected (yellow).</span><a class="headerlink" href="#id10" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id11">
+<span id="figure-reference-ligand-method-4"></span><img alt="../_images/reference-ligand-method-4.jpg" src="../_images/reference-ligand-method-4.jpg" />
+<figcaption>
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">The final selection of cavity grid points is divided into distinct cavities
+(contiguous regions). In this example only one distinct cavity is found.
+User-defined filters of <code class="docutils literal notranslate"><span class="pre">MIN_VOLUME</span></code> and <code class="docutils literal notranslate"><span class="pre">MAX_CAVITIES</span></code> are applied at
+this stage to select a subset of cavities if required. Note that the filters
+will accept or reject intact cavities only.</span><a class="headerlink" href="#id11" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Cavity mapping</a><ul>
+<li><a class="reference internal" href="#two-sphere-method">Two sphere method</a></li>
+<li><a class="reference internal" href="#reference-ligand-method">Reference ligand method</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

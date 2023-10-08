@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Molecular files and atom typing &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File formats" href="file-formats.html" />
+    <link rel="prev" title="System definition file" href="system-definition-file.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="file-formats.html" title="File formats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="system-definition-file.html" title="System definition file"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Molecular files and atom typing</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="molecular-files-and-atom-typing">
+<h1>Molecular files and atom typing<a class="headerlink" href="#molecular-files-and-atom-typing" title="Link to this heading">¶</a></h1>
+<p>Macromolecular targets (protein or RNA) are input from Tripos MOL2 files
+(<code class="docutils literal notranslate"><span class="pre">RbtMOL2FileSource</span></code> class) or from pairs of Charmm PSF (<code class="docutils literal notranslate"><span class="pre">RbtPsfFileSource</span></code>
+class) and CRD (<code class="docutils literal notranslate"><span class="pre">RbtCrdFileSource</span></code> class) files. Ligands are input from MDL
+Information Systems (MDL) structure data (SD) files (<code class="docutils literal notranslate"><span class="pre">RbtMdlFileSource</span></code>
+class). Explicit structural waters are input optionally from PDB files
+(<code class="docutils literal notranslate"><span class="pre">RbtPdbFileSource</span></code> class). Ligand docking poses are output to MDL SD files.</p>
+<p>The rDock scoring functions have been defined and validated for implicit
+non-polar hydrogen (extended carbon) models only. If you provide all-atom
+models, be aware that the non-polar hydrogens will be removed automatically.
+Polar hydrogens must be defined explicitly in the molecular files, and are not
+added by rDock. Positive ionisable and negative ionisable groups can be
+automatically protonated and deprotonated respectively to create common charged
+groups such as guanidinium and carboxylic acid groups.</p>
+<p>MOL2 is now the preferred file format for rDock as it eliminates many of the
+atom typing issues inherent in preparing and loading PSF files. The use of
+PSF/CRD files is strongly discouraged. The recommendation is to prepare an
+all-atom MOL2 file with correct Tripos atom types assigned, and allow rDock to
+remove non-polar hydrogens on-the-fly.</p>
+<section id="atomic-properties">
+<h2>Atomic properties<a class="headerlink" href="#atomic-properties" title="Link to this heading">¶</a></h2>
+<p>rDock requires the following properties to be defined per atom. Depending on the
+file format, these properties may be loaded directly from the molecular input
+file, or derived internally once the model is loaded:</p>
+<ul class="simple">
+<li><p>Cartesian (x,y,z) coordinates</p></li>
+<li><p>Element (atomic number)</p></li>
+<li><p>Formal hybridisation state (sp, sp2, sp3, aromatic, trigonal planar)</p></li>
+<li><p>Formal charge</p></li>
+<li><p>Distributed formal charge (known informally as group charge)</p></li>
+<li><p>Tripos force field type (rDock uses a modified version of the Sybyl 5.2 types,
+extended to include carbon types with implicit non-polar hydrogens)</p></li>
+<li><p>Atom name</p></li>
+<li><p>Substructure (residue) name</p></li>
+<li><p>Atomic radius (assigned per element from <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/RbtElements.dat</span></code>)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The rDock scoring functions do not use partial charges and therefore partial
+charges do not have to be defined. The atomic radii are simplified radii
+defined per element, and are used for cavity mapping and in the polar scoring
+function term, but are not used in the vdW scoring function term. The latter
+has its own indepedent parameterisation based on the Tripos force field
+types.</p>
+</div>
+</section>
+<section id="difference-between-formal-charge-and-distributed-formal-charge">
+<h2>Difference between formal charge and distributed formal charge<a class="headerlink" href="#difference-between-formal-charge-and-distributed-formal-charge" title="Link to this heading">¶</a></h2>
+<p>The formal charge on an atom is always an integer. For example, a charged
+carboxylic acid group (COO-) can be defined formally as a formal double bond to
+a neutral oxygen sp2, and a formal single bond to a formally charged oxygen sp3.
+In reality of course, both oxygens are equivalent. rDock distributes the integer
+formal charge across all equivalent atoms in the charged group that are
+topologically equivalent. In negatively charged acid groups, the formal charge
+is distributed equally between the acid oxygens. In positively charged amines,
+the formal charge is distributed equally between the hydrogens. In charged
+guanidinium, amidinium, and imidazole groups, the central carbon also receives
+an equal portion of the formal charge (in addition to the hydrogens). The
+distributed formal charge is also known as the group charge. The polar scoring
+functions in rDock use the distributed formal charge to scale the polar
+interaction strength of the polar interactions.</p>
+</section>
+<section id="parsing-a-mol2-file">
+<h2>Parsing a MOL2 file<a class="headerlink" href="#parsing-a-mol2-file" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MOLECULE</span></code>, <code class="docutils literal notranslate"><span class="pre">ATOM</span></code>, <code class="docutils literal notranslate"><span class="pre">BOND</span></code>, and <code class="docutils literal notranslate"><span class="pre">SUBSTRUCTURE</span></code> records are parsed. The
+atom name, substructure name, Cartesian coordinates and Tripos atom type are
+read directly for each atom. The element type (atomic number) and formal
+hybridisation state are derived from the Tripos type using an internal lookup
+table. Formal charges are not read from the MOL2 file and do not have to be
+assigned correctly in the file. Distributed formal charges are assigned directly
+by rDock based on standard substructure and atom names as described below.</p>
+</section>
+<section id="parsing-an-sd-file">
+<h2>Parsing an SD file<a class="headerlink" href="#parsing-an-sd-file" title="Link to this heading">¶</a></h2>
+<p>Cartesian coordinates, element and formal charge are read directly for each
+atom. Formal bond orders are read for each bond. Atom names are derived from
+element name and atom ID (e.g. C1, N2, C3). The substructure name is <code class="docutils literal notranslate"><span class="pre">MOL</span></code>.
+Formal hybridisation states are derived internally for each atom based on
+connectivity patterns and formal bond orders. The Tripos types are asssigned
+using internal rules based on atomic number, formal hybridisation state and
+formal charges. The integer formal charges are distributed automatically
+across all topologically equivalent atoms in the charged group.</p>
+</section>
+<section id="assigning-distributed-formal-charges-to-the-receptor">
+<h2>Assigning distributed formal charges to the receptor<a class="headerlink" href="#assigning-distributed-formal-charges-to-the-receptor" title="Link to this heading">¶</a></h2>
+<p>rDock provides a file format independent method for assigning distributed formal
+charges directly to the receptor atoms, which is used by the MOL2 and PSF/CRD
+file readers. The method uses a lookup table based on standard substructure and
+atom names, and does not require the integer formal charges to be assigned to
+operate correctly.</p>
+<p>The lookup table file is <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/sf/RbtIonicAtoms.prm</span></code>. Each section
+name represents a substructure name that contains formally charged atoms. The
+entries within the section represent the atom names and distributed formal
+charges for that substructure name. The file provided with rDock contains
+entries for all standard amino acids and nucleic acids, common metals, and
+specific entries required for processing the GOLD CCDC/Astex validation sets.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>You may have to extend <code class="docutils literal notranslate"><span class="pre">RbtIonicAtoms.prm</span></code> if you are working with
+non-standard receptor substructure names and/or atom names, in order for the
+distributed formal charges to be assigned correctly.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Molecular files and atom typing</a><ul>
+<li><a class="reference internal" href="#atomic-properties">Atomic properties</a></li>
+<li><a class="reference internal" href="#difference-between-formal-charge-and-distributed-formal-charge">Difference between formal charge and distributed formal charge</a></li>
+<li><a class="reference internal" href="#parsing-a-mol2-file">Parsing a MOL2 file</a></li>
+<li><a class="reference internal" href="#parsing-an-sd-file">Parsing an SD file</a></li>
+<li><a class="reference internal" href="#assigning-distributed-formal-charges-to-the-receptor">Assigning distributed formal charges to the receptor</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>

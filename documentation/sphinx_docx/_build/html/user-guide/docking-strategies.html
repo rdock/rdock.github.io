@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Docking strategies &#8212; rDock Documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d7e2fa82" />
+    <link rel="stylesheet" type="text/css" href="../_static/readable.css?v=e058d051" />
+    <link rel="stylesheet" type="text/css" href="../_static/rdock.css?v=c111951b" />
+    <script src="../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Multi-step protocol for HTVS" href="multi-step-protocol-for-htvs.html" />
+    <link rel="prev" title="Docking in 3 steps" href="docking-in-3-steps.html" />
+   
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+  
+  
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="multi-step-protocol-for-htvs.html" title="Multi-step protocol for HTVS"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="docking-in-3-steps.html" title="Docking in 3 steps"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">rDock Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Docking strategies</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="docking-strategies">
+<span id="id1"></span><h1>Docking strategies<a class="headerlink" href="#docking-strategies" title="Link to this heading">¶</a></h1>
+<p>This section does not pretend to be a comprehensive user guide. It does,
+however, highlight the key steps the user must take for different docking
+strategies, and may serve as a useful checklist in writing such a guide
+in the future.</p>
+<section id="standard-docking">
+<h2>Standard docking<a class="headerlink" href="#standard-docking" title="Link to this heading">¶</a></h2>
+<p>By standard docking, we refer to docking of a flexible, untethered ligand to a
+receptor in the absence of explicit structural waters or any experimental
+restraints.</p>
+<section id="standard-docking-workflow">
+<h3>Standard docking workflow<a class="headerlink" href="#standard-docking-workflow" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Prepare a MOL2 file for the protein or nucleic acid target, taking into
+account the atom typing issues described above for MOL2 file parsing. The
+recommendation is to prepare an all-atom MOL2 file and allow rDock to remove
+the non-polar hydrogens on-the-fly.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Make sure that any non-standard atom names and substructure names are
+defined in <code class="docutils literal notranslate"><span class="pre">$RBT_ROOT/data/sf/RbtIonicAtoms.prm</span></code> in order for the
+assignment of distributed formal charges to work correctly. Make sure that
+the Tripos atom types are set correctly. rDock uses the Tripos types to
+derive other critical atomic properties such as atomic number and
+hybridisation state.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The rDock MOL2 parser was developed to read the CCDC/Astex protein
+<code class="docutils literal notranslate"><span class="pre">.mol2</span></code> files, therefore this validation set is the de facto standard
+reference. You should compare against the format of the CCDC/Astex MOL2
+files if you are in doubt as to whether a particular MOL2 file is suitable
+for rDock.</p>
+</div>
+</li>
+<li><p>Prepare a system definition file. At a minimum, you need to define the
+receptor parameters, the cavity mapping parameters (<code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">MAPPER</span></code>) and
+the cavity restraint penalty (<code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">CAVITY</span></code>). Make sure you define the
+<code class="docutils literal notranslate"><span class="pre">RECEPTOR_FLEX</span></code> parameter if you wish to activate sampling of terminal OH
+and NH3+ groups in the vicinity of the docking site.</p></li>
+<li><p>Generate the docking site (.as) file using <code class="docutils literal notranslate"><span class="pre">rbcavity</span></code>. You will require a
+reference bound ligand structure in the coordinate space of the receptor if
+you wish to use the reference ligand cavity mapping method.</p></li>
+<li><p>Prepare the ligand SD files you wish to dock, taking into account the atom
+typing issues described above for SD file parsing. In particular, make sure
+that formal charges and formal bond order are defined coherently so that
+there are no formal valence errors in the file. rDock will report any
+perceived valence errors but will dock the structures anyway. Note that rDock
+never samples bond lengths, bond angles, ring conformations, or non-rotatable
+bonds during docking so initial conformations should be reasonable.</p></li>
+<li><p>Run a small test calculation to check that the system is defined correctly.
+For example, run <code class="docutils literal notranslate"><span class="pre">rbdock</span></code> from the command line with a small ligand SD
+file, with the score-only protocol (<code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">score.prm</span></code>) and with the <code class="docutils literal notranslate"><span class="pre">-T</span> <span class="pre">2</span></code>
+option to generate verbose output. The output will include receptor atom
+properties, ligand atom properties, flexibility parameters, scoring function
+parameters and docking protocol parameters.</p></li>
+<li><p>When satisfied, launch the full-scale calculations. A description of the
+various means of launching rDock is beyond the scope of this guide.</p></li>
+</ol>
+</section>
+</section>
+<section id="tethered-scaffold-docking">
+<h2>Tethered scaffold docking<a class="headerlink" href="#tethered-scaffold-docking" title="Link to this heading">¶</a></h2>
+<p>In tethered scaffold docking, the ligand poses are restricted and forced to
+overlay the substructure coordinates of a reference ligand. The procedure is
+largely as for standard docking, except that:</p>
+<ul class="simple">
+<li><p>Ligand SD files must be prepared with the <code class="docutils literal notranslate"><span class="pre">rbtether</span></code> utility to annotate
+each record with the matching substructure atom indices, and to transform
+the coordinates of each ligand so that the matching substructure coordinates
+are overlaid with the reference substructure coordinates. This requires a
+Daylight SMARTS toolkit license.</p></li>
+<li><p>The system definition file should contain a <code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">LIGAND</span></code> to define which
+of the the ligand degrees of freedom should be tethering to their reference
+values. Tethering can be applied to position, orientation and dihedral degrees
+of freedom independently. Note that the tethers are applied directly within
+the chromosome representation used by the search engine (where they affect the
+randomisation and mutation operators), and therefore external restraint
+penalty functions to enforce the tethers are not required.</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The reference state values for each tethered degree of freedom are defined
+directly from the initial conformation of each ligand as read from the input
+SD file, and not from the reference SD file used by <code class="docutils literal notranslate"><span class="pre">rbtether</span></code>. This is
+why the ligand coordinates are transformed by <code class="docutils literal notranslate"><span class="pre">rbtether</span></code>, such that each
+ligand record can act as its own reference state. The reference SD file used
+by <code class="docutils literal notranslate"><span class="pre">rbtether</span></code> is not referred to by the docking calculation itself.</p>
+</div>
+<p>It follows from the above that tethered ligand docking is inappropriate for
+input ligand SD files that have not already been transformed to the coordinate
+space of the docking site, either by <code class="docutils literal notranslate"><span class="pre">rbtether</span></code> or by some other means.</p>
+<section id="example-ligand-definition-for-tethered-scaffold">
+<h3>Example ligand definition for tethered scaffold<a class="headerlink" href="#example-ligand-definition-for-tethered-scaffold" title="Link to this heading">¶</a></h3>
+<p>This definition will tether the position and orientation of the tethered
+substructure, but will allow free sampling of ligand dihedrals.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECTION</span> <span class="n">LIGAND</span>
+   <span class="n">TRANS_MODE</span> <span class="n">TETHERED</span>
+   <span class="n">ROT_MODE</span> <span class="n">TETHERED</span>
+   <span class="n">DIHEDRAL_MODE</span> <span class="n">FREE</span>
+   <span class="n">MAX_TRANS</span> <span class="mf">1.0</span>
+   <span class="n">MAX_ROT</span> <span class="mf">30.0</span>
+<span class="n">END_SECTION</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="docking-with-pharmacophore-restraints">
+<h2>Docking with pharmacophore restraints<a class="headerlink" href="#docking-with-pharmacophore-restraints" title="Link to this heading">¶</a></h2>
+<p>In pharmacophore restrained docking, ligand poses are biased to fit user-defined
+pharmacophore points. The bias is introduced through the use of an external
+penalty restraint, which penalises docking poses that do not match the
+pharmacophore restraints. Unlike tethered scaffold docking, there is no
+modification to the chromosome operators themselves, hence the search can be
+inefficient, particularly for large numbers of restraints and/or for ligands
+with large numbers of matching features. Pre-screening of ligands is based
+purely on feature counts, and not on geometric match considerations.</p>
+<p>The implementation supports both mandatory and optional pharmacophore
+restraints. The penalty function is calculated over all mandatory restraints,
+and over (any <code class="docutils literal notranslate"><span class="pre">NOPT</span></code> from N) of the optional restraints. For example, you may
+wish to ensure that any 4 from 7 optional restraints are satisfied in the
+generated poses.</p>
+<p>The procedure is largely as for standard docking, except that:</p>
+<ul class="simple">
+<li><p>You should prepare separate pharmacophore restraint files for the mandatory
+and optional restraints. Note that optional restraints do not have to be
+defined, it is sufficient to only define at least one mandatory restraint.</p></li>
+<li><p>The system definition file should contain a <code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">PHARMA</span></code> to add the
+pharmacophore restraint penalty to the scoring function.</p></li>
+</ul>
+</section>
+<section id="docking-with-explicit-waters">
+<h2>Docking with explicit waters<a class="headerlink" href="#docking-with-explicit-waters" title="Link to this heading">¶</a></h2>
+<p>Explicit structural waters can be loaded from an external PDB file,
+independently from the main receptor model, by adding a <code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">SOLVENT</span></code>
+to the system definition file. The user has fine control over the flexibility of
+each water molecule. A total of 9 flexibility modes are possible, in which the
+translational and rotational degrees of freedom of each water can be set
+independently to <code class="docutils literal notranslate"><span class="pre">FIXED</span></code>, <code class="docutils literal notranslate"><span class="pre">TETHERED</span></code>, or <code class="docutils literal notranslate"><span class="pre">FREE</span></code>. Thus, for example, it is
+possible to define a water with a fixed oxygen coordinate (presumably at a
+crystallographically observed position), but freely rotating such that the
+orientation of the water hydrogens can be optimised by the search engine (and
+can be ligand-dependent).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the current implementation, solvent refers strictly to water molecules,
+and the format of the water PDB file is very strictly defined. In future
+implementations it is anticipated that other, larger (and possibly flexible)
+molecules will be loadable as solvent, and that other file formats will be
+supported.</p>
+</div>
+<section id="explicit-waters-workflow">
+<h3>Explicit waters workflow<a class="headerlink" href="#explicit-waters-workflow" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Prepare a separate PDB file for the explicit waters according to the format
+prescribed (the section called <a class="reference internal" href="../reference-guide/file-formats.html#water-pdb-file-format"><span class="std std-ref">Water PDB file format</span></a>).</p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">SOLVENT</span></code> to the system definition file and define the
+relevant flexibility parameters (<a class="reference internal" href="../reference-guide/system-definition-file.html#table-solvent-definition-parameters"><span class="std std-numref">Table 13</span></a>). The minimal requirement is to define
+the <code class="docutils literal notranslate"><span class="pre">FILE</span></code> parameter.</p></li>
+<li><p>Decide whether you wish to have different per-solvent flexibility modes
+(defined via the occupancy values and temperature factor values in the PDB
+file (<a class="reference internal" href="../reference-guide/file-formats.html#table-conversion-temperature-solvent-flexibility"><span class="std std-numref">Table 17</span></a>)), or whether you wish to
+have a single flexibility mode applied to all waters (defined via the
+<code class="docutils literal notranslate"><span class="pre">TRANS_MODE</span></code> and <code class="docutils literal notranslate"><span class="pre">ROT_MODE</span></code> values in the <code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">SOLVENT</span></code> of the
+receptor .prm file).</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you wish to use per-solvent flexibility modes (that is, you wish to set
+different modes for different waters) make sure that you do not define
+<code class="docutils literal notranslate"><span class="pre">TRANS_MODE</span></code> or <code class="docutils literal notranslate"><span class="pre">ROT_MODE</span></code> entries in the <code class="docutils literal notranslate"><span class="pre">SECTION</span> <span class="pre">SOLVENT</span></code> as these
+values will override the per-solvent values derived from the temperature
+factors in the PDB file.</p>
+</div>
+</li>
+<li><p>If you have defined any waters with <code class="docutils literal notranslate"><span class="pre">TETHERED</span></code> translational or rotational
+degrees of freedom, define <code class="docutils literal notranslate"><span class="pre">MAX_TRANS</span></code> and/or <code class="docutils literal notranslate"><span class="pre">MAX_ROT</span></code> values as
+appropriate (or accept the default values). The tethered ranges are applied
+to all tethered waters and can not be defined on a per-solvent basis at
+present.</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rdocklogo.png" alt="Logo"/>
+            </a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Docking strategies</a><ul>
+<li><a class="reference internal" href="#standard-docking">Standard docking</a><ul>
+<li><a class="reference internal" href="#standard-docking-workflow">Standard docking workflow</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tethered-scaffold-docking">Tethered scaffold docking</a><ul>
+<li><a class="reference internal" href="#example-ligand-definition-for-tethered-scaffold">Example ligand definition for tethered scaffold</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#docking-with-pharmacophore-restraints">Docking with pharmacophore restraints</a></li>
+<li><a class="reference internal" href="#docking-with-explicit-waters">Docking with explicit waters</a><ul>
+<li><a class="reference internal" href="#explicit-waters-workflow">Explicit waters workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012 – 2023, rDock development team;.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.
+  </div>
+  
+  </body>
+</html>
